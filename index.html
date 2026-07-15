@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 
 <head>
@@ -190,7 +189,8 @@
       display: none;
       font-size: 1rem;
       font-weight: 700;
-      letter-spacing: -.02em
+      letter-spacing: -.02em;
+      color: var(--foreground)
     }
 
     @media(min-width:640px) {
@@ -653,7 +653,8 @@
     .game-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 1.25rem
+      gap: 1.25rem;
+      align-items: stretch
     }
 
     @media(min-width:640px) {
@@ -679,6 +680,7 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      height: 100%;
       border-radius: .75rem;
       border: 1px solid var(--border);
       background: var(--card);
@@ -1010,7 +1012,8 @@
       gap: .5rem;
       border-bottom: 1px solid var(--border);
       background: var(--muted);
-      padding: .5rem .75rem
+      padding: .5rem .75rem;
+      flex-wrap: wrap
     }
 
     .code-toolbar-title {
@@ -1038,12 +1041,16 @@
     .code-body {
       flex: 1;
       overflow: hidden;
-      display: flex
+      display: flex;
+      flex-direction: row;
+      min-height: 0
     }
 
     .code-editors {
       display: flex;
-      height: 100%;
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 0;
       overflow: hidden
     }
 
@@ -1059,104 +1066,82 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      background: #1e1e2e;
-      flex: 1;
       min-width: 0;
-      min-height: 0
+      min-height: 0;
+      background: var(--card);
+      flex: 1 1 0
     }
 
     .editor-header {
       display: flex;
       align-items: center;
       gap: .5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, .1);
-      padding: .375rem .75rem
+      border-bottom: 1px solid var(--border);
+      padding: .375rem .75rem;
+      background: var(--muted)
     }
 
     .editor-dot {
       width: .5rem;
       height: .5rem;
-      border-radius: 99px
+      border-radius: 99px;
+      flex-shrink: 0
     }
 
     .editor-label {
-      font-size: .75rem;
-      font-weight: 600;
+      font-size: .7rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .05em;
-      color: rgba(255, 255, 255, .7)
+      letter-spacing: .06em;
+      color: var(--muted-foreground)
     }
 
-    .editor-body {
+    .editor-host {
       position: relative;
-      display: flex;
       flex: 1;
       overflow: hidden;
+      min-height: 0;
+      min-width: 0
+    }
+
+    .editor-host .CodeMirror {
+      position: absolute;
+      inset: 0;
+      height: 100%;
       font-family: ui-monospace, "SF Mono", Monaco, monospace;
       font-size: 13px;
-      line-height: 1.5
+      line-height: 1.6
     }
 
-    .editor-gutter {
-      user-select: none;
-      overflow: hidden;
-      padding: .75rem .5rem .75rem .75rem;
-      text-align: right;
-      color: rgba(255, 255, 255, .25)
+    .editor-host textarea {
+      display: none
     }
 
-    .editor-gutter div {
-      height: 1.5em
-    }
-
-    .editor-textarea {
-      flex: 1;
-      resize: none;
-      border: none;
-      background: transparent;
-      color: rgba(255, 255, 255, .9);
-      padding: .75rem .75rem .75rem .5rem;
-      font-family: inherit;
-      font-size: inherit;
-      line-height: inherit;
-      tab-size: 2;
-      -moz-tab-size: 2;
-      outline: none;
-    }
-
-    .editor-textarea::placeholder {
-      color: rgba(255, 255, 255, .2)
-    }
-
-    .editor-textarea::-webkit-scrollbar {
-      width: 10px;
-      height: 10px
-    }
-
-    .editor-textarea::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, .15);
-      border-radius: 99px
-    }
-
-    /* Resize handle */
-    .resize-handle {
-      flex-shrink: 0;
+    /* Splitters — unlimited drag (0–100%, no limits) */
+    .splitter {
+      flex: 0 0 6px;
       background: var(--border);
-      position: relative
+      position: relative;
+      z-index: 6;
+      transition: background .12s
     }
 
-    .resize-handle.horizontal {
-      width: 1px;
+    .splitter.col {
       cursor: col-resize
     }
 
-    .resize-handle.vertical {
-      height: 1px;
+    .splitter.row {
       cursor: row-resize
     }
 
-    .resize-handle:hover,
-    .resize-handle.dragging {
+    .splitter::before {
+      content: "";
+      position: absolute;
+      inset: -4px
+    }
+
+    .splitter:hover,
+    .splitter.dragging {
       background: var(--emerald)
     }
 
@@ -1165,7 +1150,7 @@
       display: flex;
       flex-direction: column;
       background: #fff;
-      flex: 1;
+      flex: 1 1 0;
       min-width: 0;
       min-height: 0
     }
@@ -1201,7 +1186,27 @@
       flex: 1;
       border: none;
       background: #fff;
-      width: 100%
+      width: 100%;
+      min-height: 0
+    }
+
+    /* CodeMirror theme tweaks */
+    .CodeMirror {
+      font-family: ui-monospace, "SF Mono", Monaco, monospace !important;
+      font-size: 13px !important;
+      line-height: 1.6 !important;
+      height: 100%
+    }
+
+    .CodeMirror-matchingbracket {
+      font-weight: 700;
+      text-decoration: underline;
+      text-decoration-color: var(--emerald) !important
+    }
+
+    .CodeMirror-placeholder {
+      opacity: .55;
+      font-style: italic
     }
 
     /* ==========================================================================
@@ -1455,50 +1460,48 @@
   <!-- ============================ HEADER ============================ -->
   <header class="header">
     <div class="header-inner">
-      <button class="logo-btn" onclick="setView('games')" id="logo-btn" aria-label="Home">
-        <span class="logo-badge" id="logo-badge">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="6" y1="11" x2="10" y2="11" />
-            <line x1="8" y1="9" x2="8" y2="13" />
-            <line x1="15" y1="12" x2="15.01" y2="12" />
-            <line x1="18" y1="10" x2="18.01" y2="10" />
-            <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z" />
-          </svg>
-        </span>
+      <button class="logo-btn" onclick="setView('games')" id="logo-btn" aria-label="Gc Biology home">
+        <span class="logo-badge" id="logo-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="6" y1="11" x2="10" y2="11"></line>
+            <line x1="8" y1="9" x2="8" y2="13"></line>
+            <line x1="15" y1="12" x2="15.01" y2="12"></line>
+            <line x1="18" y1="10" x2="18.01" y2="10"></line>
+            <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z"></path>
+          </svg></span>
         <span class="logo-text" id="logo-text">Gc Biology</span>
       </button>
 
       <nav class="nav" role="navigation">
-        <button class="nav-btn" data-view="games" onclick="setView('games')">
+        <button class="nav-btn active" data-view="games" onclick="setView('games')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="6" y1="11" x2="10" y2="11" />
-            <line x1="8" y1="9" x2="8" y2="13" />
-            <line x1="15" y1="12" x2="15.01" y2="12" />
-            <line x1="18" y1="10" x2="18.01" y2="10" />
-            <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z" />
+            <line x1="6" y1="11" x2="10" y2="11"></line>
+            <line x1="8" y1="9" x2="8" y2="13"></line>
+            <line x1="15" y1="12" x2="15.01" y2="12"></line>
+            <line x1="18" y1="10" x2="18.01" y2="10"></line>
+            <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z"></path>
           </svg>
-          <span class="nav-label">Games</span>
+          <span class="nav-label" style="display: inline;">Games</span>
         </button>
         <button class="nav-btn" data-view="favorites" onclick="setView('favorites')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
           </svg>
-          <span class="nav-label">Favorites</span>
+          <span class="nav-label" style="display: inline;">Favorites</span>
           <span class="nav-badge hidden" id="fav-count">0</span>
         </button>
         <button class="nav-btn" data-view="code" onclick="setView('code')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="16 18 22 12 16 6" />
-            <polyline points="8 6 2 12 8 18" />
+            <polyline points="16 18 22 12 16 6"></polyline>
+            <polyline points="8 6 2 12 8 18"></polyline>
           </svg>
-          <span class="nav-label">Code</span>
+          <span class="nav-label" style="display: inline;">Code</span>
         </button>
       </nav>
 
       <div class="search-wrap">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
         <input class="search-input" type="search" id="search" placeholder="Search games…" aria-label="Search games" oninput="onSearch(this.value)">
       </div>
@@ -1507,15 +1510,23 @@
 
       <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
         <svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
         </svg>
       </button>
     </div>
     <div class="mobile-search">
       <div class="search-wrap">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8" />
-          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
         <input class="search-input" type="search" id="search-mobile" placeholder="Search games…" aria-label="Search games" oninput="onSearch(this.value)">
       </div>
@@ -1525,7 +1536,44 @@
   <!-- ============================ MAIN ============================ -->
   <main class="main">
     <!-- GAMES VIEW -->
-    <div id="view-games" class="container"></div>
+    <div id="view-games" class="container">
+      <section>
+        <div class="grid-header">
+          <div>
+            <h2>All games</h2>
+            <p>0 games available</p>
+          </div>
+          <div class="chips scrollbar-thin"><button class="chip active" onclick="setCategory('All')">All</button><button class="chip" onclick="setCategory('Arcade')">Arcade</button><button class="chip" onclick="setCategory('Puzzle')">Puzzle</button><button class="chip" onclick="setCategory('Strategy')">Strategy</button><button class="chip" onclick="setCategory('Action')">Action</button><button class="chip" onclick="setCategory('Adventure')">Adventure</button><button class="chip" onclick="setCategory('Racing')">Racing</button></div>
+        </div>
+        <div class="empty">
+          <div class="empty-icon lg gradient"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="6" y1="11" x2="10" y2="11"></line>
+              <line x1="8" y1="9" x2="8" y2="13"></line>
+              <line x1="15" y1="12" x2="15.01" y2="12"></line>
+              <line x1="18" y1="10" x2="18.01" y2="10"></line>
+              <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z"></path>
+            </svg></div>
+          <div>
+            <h3>No games yet</h3>
+            <p>Add your own games by editing the <code>GAMES</code> array at the top of <code>index.html</code>. Copy a game block, paste it in, and fill in the fields.</p>
+          </div>
+          <div class="help-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <div>
+              <p class="help-title">Quick start</p>
+              <ol>
+                <li>Open <code>index.html</code></li>
+                <li>Edit the <code>GENRES</code> list at the top if you want</li>
+                <li>Copy a game block and paste it into the <code>GAMES</code> array</li>
+                <li>Save — refresh the page to see it</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
 
     <!-- FAVORITES VIEW -->
     <div id="view-favorites" class="container hidden"></div>
@@ -1536,76 +1584,81 @@
         <div class="code-toolbar">
           <div class="code-toolbar-title">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="16 18 22 12 16 6" />
-              <polyline points="8 6 2 12 8 18" />
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
             </svg>
-            <span class="nav-label">Code Editor</span>
+            <span class="nav-label" style="display: inline;">Code Editor</span>
           </div>
           <div class="code-toolbar-actions">
+            <button class="btn btn-ghost btn-sm" onclick="codeBeautify()" title="Beautify (format HTML, CSS &amp; JS)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 4V2"></path>
+                <path d="M15 16v-2"></path>
+                <path d="M8 9h2"></path>
+                <path d="M20 9h2"></path>
+                <path d="M17.8 11.8 19 13"></path>
+                <path d="M15 9h.01"></path>
+                <path d="M17.8 6.2 19 5"></path>
+                <path d="m3 21 9-9"></path>
+                <path d="M12.2 6.2 11 5"></path>
+              </svg>
+              <span class="nav-label" style="display: inline;">Beautify</span>
+            </button>
             <button class="btn btn-ghost btn-sm" onclick="codeRun()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <polygon points="5 3 19 12 5 21 5 3" />
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
               </svg>
-              <span class="nav-label">Run</span>
+              <span class="nav-label" style="display: inline;">Run</span>
             </button>
             <button class="btn btn-ghost btn-sm" onclick="codeReset()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="1 4 1 10 7 10" />
-                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
+                <polyline points="1 4 1 10 7 10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
               </svg>
-              <span class="nav-label">Reset</span>
+              <span class="nav-label" style="display: inline;">Reset</span>
             </button>
             <button class="btn btn-ghost btn-sm" onclick="codeNewTab()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                <polyline points="15 3 21 3 21 9" />
-                <line x1="10" y1="14" x2="21" y2="3" />
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="10" y1="14" x2="21" y2="3"></line>
               </svg>
-              <span class="nav-label nav-label-md">New tab</span>
+              <span class="nav-label nav-label-md" style="display: inline;">New tab</span>
             </button>
             <div class="code-divider"></div>
             <button class="btn btn-ghost btn-sm" onclick="codeToggleLayout()" aria-label="Toggle layout">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" />
-                <line x1="9" y1="3" x2="9" y2="21" />
+                <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+                <line x1="9" y1="3" x2="9" y2="21"></line>
               </svg>
-              <span class="nav-label nav-label-md">Layout</span>
+              <span class="nav-label nav-label-md" style="display: inline;">Layout</span>
             </button>
             <button class="btn btn-ghost btn-icon" onclick="codeToggleFullscreen()" id="fs-btn" aria-label="Toggle fullscreen">
               <svg id="fs-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
               </svg>
             </button>
           </div>
         </div>
         <div class="code-body" id="code-body">
           <div class="code-editors vertical" id="code-editors">
-            <div class="editor-panel" id="panel-html" style="flex:1">
-              <div class="editor-header" style="border-top:2px solid #e34c26"><span class="editor-dot" style="background:#e34c26"></span><span class="editor-label">HTML</span></div>
-              <div class="editor-body">
-                <div class="editor-gutter" id="gutter-html"></div>
-                <textarea class="editor-textarea" id="editor-html" spellcheck="false" placeholder="<!-- Write HTML here -->" oninput="onCodeInput('html',this.value)"></textarea>
-              </div>
+            <div class="editor-panel" id="panel-html">
+              <div class="editor-header"><span class="editor-dot" style="background:#e34c26"></span><span class="editor-label">HTML</span></div>
+              <div class="editor-host" id="host-html"><textarea id="editor-html" spellcheck="false"></textarea></div>
             </div>
-            <div class="resize-handle vertical" data-dir="v" data-editors></div>
-            <div class="editor-panel" id="panel-css" style="flex:1">
-              <div class="editor-header" style="border-top:2px solid #06b6d4"><span class="editor-dot" style="background:#06b6d4"></span><span class="editor-label">CSS</span></div>
-              <div class="editor-body">
-                <div class="editor-gutter" id="gutter-css"></div>
-                <textarea class="editor-textarea" id="editor-css" spellcheck="false" placeholder="/* Write CSS here */" oninput="onCodeInput('css',this.value)"></textarea>
-              </div>
+            <div class="splitter row" data-split="0"></div>
+            <div class="editor-panel" id="panel-css">
+              <div class="editor-header"><span class="editor-dot" style="background:#06b6d4"></span><span class="editor-label">CSS</span></div>
+              <div class="editor-host" id="host-css"><textarea id="editor-css" spellcheck="false"></textarea></div>
             </div>
-            <div class="resize-handle vertical" data-dir="v" data-editors></div>
-            <div class="editor-panel" id="panel-js" style="flex:1">
-              <div class="editor-header" style="border-top:2px solid #eab308"><span class="editor-dot" style="background:#eab308"></span><span class="editor-label">JS</span></div>
-              <div class="editor-body">
-                <div class="editor-gutter" id="gutter-js"></div>
-                <textarea class="editor-textarea" id="editor-js" spellcheck="false" placeholder="// Write JavaScript here" oninput="onCodeInput('js',this.value)"></textarea>
-              </div>
+            <div class="splitter row" data-split="1"></div>
+            <div class="editor-panel" id="panel-js">
+              <div class="editor-header"><span class="editor-dot" style="background:#eab308"></span><span class="editor-label">JS</span></div>
+              <div class="editor-host" id="host-js"><textarea id="editor-js" spellcheck="false"></textarea></div>
             </div>
           </div>
-          <div class="resize-handle horizontal" id="handle-main" data-dir="h"></div>
-          <div class="preview-panel" id="preview-panel" style="flex:1">
+          <div class="splitter col" id="split-main"></div>
+          <div class="preview-panel" id="preview-panel">
             <div class="preview-bar">
               <div class="preview-dots"><span style="background:#f87171"></span><span style="background:#fbbf24"></span><span style="background:#34d399"></span></div>
               <span class="preview-label">Preview</span>
@@ -1622,15 +1675,15 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <span class="footer-badge" id="footer-badge"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="6" y1="11" x2="10" y2="11" />
-            <line x1="8" y1="9" x2="8" y2="13" />
-            <line x1="15" y1="12" x2="15.01" y2="12" />
-            <line x1="18" y1="10" x2="18.01" y2="10" />
-            <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z" />
+            <line x1="6" y1="11" x2="10" y2="11"></line>
+            <line x1="8" y1="9" x2="8" y2="13"></line>
+            <line x1="15" y1="12" x2="15.01" y2="12"></line>
+            <line x1="18" y1="10" x2="18.01" y2="10"></line>
+            <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z"></path>
           </svg></span>
         <span><strong id="footer-name">Gc Biology</strong><span class="footer-sep">·</span><span id="footer-tagline">Play. Favorite. Build.</span></span>
       </div>
-      <p>© <span id="year"></span> <span id="footer-copy-name">Gc Biology</span>. For educational and entertainment use.</p>
+      <p>© <span id="year">2026</span> <span id="footer-copy-name">Gc Biology</span>. For educational and entertainment use.</p>
     </div>
   </footer>
 
@@ -1643,28 +1696,28 @@
         <div class="modal-actions">
           <button class="modal-btn" id="modal-fav" onclick="toggleFavoriteModal()">
             <svg id="modal-fav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
             </svg>
             <span class="modal-btn-label" id="modal-fav-label">Favorite</span>
           </button>
           <button class="modal-btn" onclick="openGameNewTab()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-              <polyline points="15 3 21 3 21 9" />
-              <line x1="10" y1="14" x2="21" y2="3" />
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
             </svg>
             <span class="modal-btn-label">New tab</span>
           </button>
           <button class="modal-btn" onclick="toggleFullscreenStage()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
             </svg>
             <span class="modal-btn-label">Fullscreen</span>
           </button>
           <button class="modal-btn" onclick="closePlayer()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18" />
-              <line x1="6" y1="6" x2="18" y2="18" />
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
             <span class="modal-btn-label">Close</span>
           </button>
@@ -1673,15 +1726,15 @@
       <div class="modal-stage" id="modal-stage">
         <div class="modal-loading hidden" id="modal-loading">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite">
-            <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+            <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
           </svg>
           <p style="font-size:.875rem" id="modal-loading-text">Loading…</p>
         </div>
         <div class="modal-error hidden" id="modal-error">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="12" y1="8" x2="12" y2="12" />
-            <line x1="12" y1="16" x2="12.01" y2="16" />
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
           </svg>
           <h3 style="margin:0;font-size:1rem;color:#fff">Could not load game</h3>
           <p style="margin:0;font-size:.875rem;color:rgba(255,255,255,.7);max-width:26rem" id="modal-error-msg"></p>
@@ -1816,9 +1869,9 @@
       js: 'const btn = document.getElementById(\'btn\');\nlet count = 0;\n\nbtn.addEventListener(\'click\', () => {\n  count++;\n  btn.textContent = \'Clicked \' + count + \' times\';\n});\n'
     };
     let codeState = {
-      html: DEFAULT_CODE.html,
-      css: DEFAULT_CODE.css,
-      js: DEFAULT_CODE.js
+      html: "",
+      css: "",
+      js: ""
     };
     /* ---------- Cookie helpers ---------- */
     function getCookie(name) {
@@ -1923,6 +1976,7 @@
       document.documentElement.setAttribute("data-theme", next);
       localStorage.setItem(THEME_KEY, next);
       updateThemeIcon(next);
+      syncEditorTheme();
     }
 
     function updateThemeIcon(theme) {
@@ -2153,7 +2207,42 @@
     }
 
     function openGameNewTab() {
-      if (activeGame) window.open(activeGame.fileUrl, "_blank", "noopener,noreferrer");
+      if (!activeGame) return;
+      const game = activeGame;
+      const frame = document.getElementById("modal-frame");
+      // Reuse the HTML already fetched & rendered in the modal (with <base> tag
+      // injected) so the new tab loads the game exactly like Play does. If the
+      // modal hasn't loaded it yet, fall back to fetching on the spot.
+      let html = frame && frame.getAttribute("srcdoc");
+      if (html && html.trim() !== "") {
+        const blob = new Blob([html], {
+          type: "text/html"
+        });
+        const url = URL.createObjectURL(blob);
+        window.open(url, "_blank");
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+        return;
+      }
+      // Fallback: fetch fresh, inject base tag, open as blob
+      (async () => {
+        try {
+          const res = await fetch(game.fileUrl, {
+            mode: "cors"
+          });
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          let fetched = await res.text();
+          fetched = injectBaseTag(fetched, game.fileUrl);
+          const blob = new Blob([fetched], {
+            type: "text/html"
+          });
+          const url = URL.createObjectURL(blob);
+          window.open(url, "_blank");
+          setTimeout(() => URL.revokeObjectURL(url), 10000);
+        } catch (err) {
+          // Last resort: open the raw URL directly
+          window.open(game.fileUrl, "_blank", "noopener,noreferrer");
+        }
+      })();
     }
 
     function toggleFullscreenStage() {
@@ -2176,57 +2265,192 @@
     function toggleFavoriteModal() {
       if (activeGame) toggleFavorite(activeGame.id);
     }
-    /* ---------- Code editor ---------- */
+    /* ---------- Code editor (CodeMirror-powered) ---------- */
     let codeInited = false;
     let previewTimer = null;
+    let editors = {
+      html: null,
+      css: null,
+      js: null
+    };
+    let editorSizes = [33.33, 33.33, 33.34]; // % of editors region (html, css, js)
+    let mainSizes = [60, 40]; // % of code-body [editors, preview]
+    let cmLoaded = false;
+    const CM_VER = "5.65.16";
+    const CM_BASE = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/" + CM_VER;
+    const BEAUTIFY_VER = "1.15.1";
+    const BEAUTIFY_BASE = "https://cdnjs.cloudflare.com/ajax/libs/js-beautify/" + BEAUTIFY_VER;
 
-    function initCodeEditor() {
-      if (!codeInited) {
-        codeInited = true;
-        // Load saved code
-        try {
-          const saved = localStorage.getItem(CODE_KEY);
-          if (saved) {
-            const p = JSON.parse(saved);
-            if (p) {
-              codeState.html = p.html || DEFAULT_CODE.html;
-              codeState.css = p.css || DEFAULT_CODE.css;
-              codeState.js = p.js || DEFAULT_CODE.js;
-            }
-          }
-        } catch {}
-        document.getElementById("editor-html").value = codeState.html;
-        document.getElementById("editor-css").value = codeState.css;
-        document.getElementById("editor-js").value = codeState.js;
-        updateAllGutters();
-        setupResizeHandles();
-        updatePreview();
-        // Sync scroll
-        ["html", "css", "js"].forEach(lang => {
-          const ta = document.getElementById("editor-" + lang);
-          const g = document.getElementById("gutter-" + lang);
-          ta.addEventListener("scroll", () => {
-            g.scrollTop = ta.scrollTop;
-          });
-        });
-        // Fullscreen change
-        document.addEventListener("fullscreenchange", () => {
-          const icon = document.getElementById("fs-icon");
-          if (document.fullscreenElement) {
-            icon.innerHTML = '<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>';
-          } else {
-            icon.innerHTML = '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>';
-          }
-        });
-      }
+    function loadScript(src) {
+      return new Promise((res, rej) => {
+        const s = document.createElement("script");
+        s.src = src;
+        s.async = true;
+        s.onload = () => res();
+        s.onerror = () => rej(new Error("Failed to load " + src));
+        document.head.appendChild(s);
+      });
     }
 
-    function onCodeInput(lang, value) {
-      codeState[lang] = value;
-      updateGutter(lang);
-      clearTimeout(previewTimer);
-      previewTimer = setTimeout(updatePreview, 300);
-      saveCodeState();
+    function loadStyle(href) {
+      return new Promise((res, rej) => {
+        const l = document.createElement("link");
+        l.rel = "stylesheet";
+        l.href = href;
+        l.onload = () => res();
+        l.onerror = () => rej(new Error("Failed to load " + href));
+        document.head.appendChild(l);
+      });
+    }
+    async function loadCodeEditorLibs() {
+      if (cmLoaded) return;
+      await Promise.all([
+        loadStyle(CM_BASE + "/codemirror.min.css"),
+        loadStyle(CM_BASE + "/theme/dracula.min.css"),
+        loadStyle(CM_BASE + "/theme/eclipse.min.css"),
+      ]);
+      await loadScript(CM_BASE + "/codemirror.min.js");
+      await Promise.all([
+        loadScript(CM_BASE + "/mode/xml/xml.min.js"),
+        loadScript(CM_BASE + "/mode/css/css.min.js"),
+        loadScript(CM_BASE + "/mode/javascript/javascript.min.js"),
+        loadScript(CM_BASE + "/mode/htmlmixed/htmlmixed.min.js"),
+        loadScript(CM_BASE + "/addon/edit/closebrackets.min.js"),
+        loadScript(CM_BASE + "/addon/edit/closetag.min.js"),
+        loadScript(CM_BASE + "/addon/edit/matchbrackets.min.js"),
+        loadScript(CM_BASE + "/addon/selection/active-line.min.js"),
+        loadScript(CM_BASE + "/addon/display/placeholder.min.js"),
+      ]);
+      await Promise.all([
+        loadScript(BEAUTIFY_BASE + "/beautify.min.js"),
+        loadScript(BEAUTIFY_BASE + "/beautify-css.min.js"),
+        loadScript(BEAUTIFY_BASE + "/beautify-html.min.js"),
+      ]);
+      cmLoaded = true;
+    }
+
+    function cmTheme() {
+      return document.documentElement.getAttribute("data-theme") === "dark" ? "dracula" : "eclipse";
+    }
+
+    function syncEditorTheme() {
+      if (!editors || !editors.html) return;
+      const t = cmTheme();
+      editors.html.setOption("theme", t);
+      editors.css.setOption("theme", t);
+      editors.js.setOption("theme", t);
+    }
+
+    function makeEditor(textareaId, mode, placeholder) {
+      const ta = document.getElementById(textareaId);
+      const cm = CodeMirror.fromTextArea(ta, {
+        mode: mode,
+        theme: cmTheme(),
+        lineNumbers: true,
+        lineWrapping: false,
+        indentUnit: 2,
+        tabSize: 2,
+        indentWithTabs: false,
+        smartIndent: true,
+        electricChars: true,
+        autoCloseBrackets: {
+          pairs: '()[]{}\'\'""``',
+          triples: "",
+          explode: "[]{}"
+        },
+        autoCloseTags: true,
+        matchBrackets: true,
+        styleActiveLine: true,
+        placeholder: placeholder,
+        extraKeys: {
+          "Tab": function(cm) {
+            cm.replaceSelection("  ", "end");
+          },
+          "Ctrl-Enter": function() {
+            updatePreview();
+          },
+          "Cmd-Enter": function() {
+            updatePreview();
+          },
+          "Ctrl-S": function() {
+            saveCodeState();
+          },
+          "Cmd-S": function() {
+            saveCodeState();
+          },
+        },
+      });
+      return cm;
+    }
+    async function initCodeEditor() {
+      if (codeInited) {
+        refreshAllEditors();
+        return;
+      }
+      codeInited = true;
+      const body = document.getElementById("code-body");
+      try {
+        await loadCodeEditorLibs();
+      } catch (e) {
+        body.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:var(--muted-foreground);padding:2rem;text-align:center">Could not load the code editor libraries. Please check your internet connection and reload.</div>';
+        codeInited = false;
+        return;
+      }
+      // Load saved code (empty by default)
+      try {
+        const saved = localStorage.getItem(CODE_KEY);
+        if (saved) {
+          const p = JSON.parse(saved);
+          if (p) {
+            codeState.html = p.html || "";
+            codeState.css = p.css || "";
+            codeState.js = p.js || "";
+          }
+        }
+      } catch {}
+      // Create the three CodeMirror instances
+      editors.html = makeEditor("editor-html", "htmlmixed", "<!-- Write HTML here -->");
+      editors.css = makeEditor("editor-css", "css", "/* Write CSS here */");
+      editors.js = makeEditor("editor-js", "javascript", "// Write JavaScript here");
+      editors.html.setValue(codeState.html);
+      editors.css.setValue(codeState.css);
+      editors.js.setValue(codeState.js);
+      // Change handler — sync state, debounced preview, autosave
+      const onChange = function() {
+        codeState.html = editors.html.getValue();
+        codeState.css = editors.css.getValue();
+        codeState.js = editors.js.getValue();
+        clearTimeout(previewTimer);
+        previewTimer = setTimeout(updatePreview, 300);
+        saveCodeState();
+      };
+      editors.html.on("change", onChange);
+      editors.css.on("change", onChange);
+      editors.js.on("change", onChange);
+      // Layout, splitters, resize observers
+      applyEditorSizes();
+      applyMainSizes();
+      setupSplitters();
+      setupEditorResizeObservers();
+      updatePreview();
+      // Fullscreen icon toggle
+      document.addEventListener("fullscreenchange", function() {
+        const icon = document.getElementById("fs-icon");
+        if (document.fullscreenElement) {
+          icon.innerHTML = '<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>';
+        } else {
+          icon.innerHTML = '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>';
+        }
+        refreshAllEditors();
+      });
+      setTimeout(refreshAllEditors, 60);
+    }
+
+    function refreshAllEditors() {
+      if (!editors || !editors.html) return;
+      editors.html.refresh();
+      editors.css.refresh();
+      editors.js.refresh();
     }
 
     function saveCodeState() {
@@ -2235,27 +2459,13 @@
       } catch {}
     }
 
-    function updateGutter(lang) {
-      const ta = document.getElementById("editor-" + lang);
-      const g = document.getElementById("gutter-" + lang);
-      const lines = ta.value.split("\n").length;
-      let html = "";
-      for (let i = 1; i <= lines; i++) html += "<div>" + i + "</div>";
-      g.innerHTML = html;
-      g.scrollTop = ta.scrollTop;
-    }
-
-    function updateAllGutters() {
-      ["html", "css", "js"].forEach(updateGutter);
-    }
-
     function buildPreviewDoc() {
       return "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<style>\n" + codeState.css + "\n</style>\n</head>\n<body>\n" + codeState.html + "\n<script>\ntry {\n" + codeState.js + "\n} catch (e) {\n  console.error(e);\n  document.body.insertAdjacentHTML('beforeend', '<pre style=\"position:fixed;bottom:0;left:0;right:0;margin:0;padding:8px 12px;background:#1a0a0a;color:#ff6b6b;font:12px/1.5 monospace;white-space:pre-wrap;border-top:1px solid #ff6b6b33;z-index:9999;\">' + String(e && e.stack || e) + '<\\/pre>');\n}\n<\/script>\n</body>\n</html>";
     }
 
     function updatePreview() {
       const frame = document.getElementById("preview-frame");
-      frame.srcdoc = buildPreviewDoc();
+      if (frame) frame.srcdoc = buildPreviewDoc();
     }
 
     function codeRun() {
@@ -2264,16 +2474,50 @@
 
     function codeReset() {
       codeState = {
-        html: DEFAULT_CODE.html,
-        css: DEFAULT_CODE.css,
-        js: DEFAULT_CODE.js
+        html: "",
+        css: "",
+        js: ""
       };
-      document.getElementById("editor-html").value = codeState.html;
-      document.getElementById("editor-css").value = codeState.css;
-      document.getElementById("editor-js").value = codeState.js;
-      updateAllGutters();
+      if (editors.html) {
+        editors.html.setValue("");
+        editors.css.setValue("");
+        editors.js.setValue("");
+      }
       updatePreview();
       saveCodeState();
+    }
+
+    function codeBeautify() {
+      if (!editors.html) return;
+      try {
+        if (window.html_beautify) {
+          const v = html_beautify(editors.html.getValue(), {
+            indent_size: 2,
+            wrap_line_length: 0,
+            end_with_newline: false
+          });
+          editors.html.setValue(v);
+          codeState.html = v;
+        }
+        if (window.css_beautify) {
+          const v = css_beautify(editors.css.getValue(), {
+            indent_size: 2
+          });
+          editors.css.setValue(v);
+          codeState.css = v;
+        }
+        if (window.js_beautify) {
+          const v = js_beautify(editors.js.getValue(), {
+            indent_size: 2
+          });
+          editors.js.setValue(v);
+          codeState.js = v;
+        }
+        updatePreview();
+        saveCodeState();
+      } catch (e) {
+        console.error("Beautify failed", e);
+      }
     }
 
     function codeNewTab() {
@@ -2287,14 +2531,14 @@
 
     function codeToggleLayout() {
       codeLayout = codeLayout === "vertical" ? "horizontal" : "vertical";
-      const editors = document.getElementById("code-editors");
-      editors.classList.toggle("vertical", codeLayout === "vertical");
-      editors.classList.toggle("horizontal", codeLayout === "horizontal");
-      // Update internal handles direction
-      document.querySelectorAll("[data-editors]").forEach(h => {
-        h.classList.toggle("vertical", codeLayout === "vertical");
-        h.classList.toggle("horizontal", codeLayout === "horizontal");
+      const editorsEl = document.getElementById("code-editors");
+      editorsEl.classList.toggle("vertical", codeLayout === "vertical");
+      editorsEl.classList.toggle("horizontal", codeLayout === "horizontal");
+      document.querySelectorAll("[data-split]").forEach(function(h) {
+        h.classList.toggle("row", codeLayout === "vertical");
+        h.classList.toggle("col", codeLayout === "horizontal");
       });
+      setTimeout(refreshAllEditors, 60);
     }
 
     function codeToggleFullscreen() {
@@ -2302,64 +2546,126 @@
       if (document.fullscreenElement) document.exitFullscreen();
       else el.requestFullscreen();
     }
-    /* ---------- Resize handles ---------- */
-    function setupResizeHandles() {
-      // Main handle: between editors and preview
-      setupHandle(document.getElementById("handle-main"), "code-editors", "preview-panel", "h");
-      // Internal handles between editor panels
-      const panels = ["panel-html", "panel-css", "panel-js"];
-      const handles = document.querySelectorAll("[data-editors]");
-      handles.forEach((h, i) => {
-        if (i < panels.length - 1) {
-          setupHandle(h, panels[i], panels[i + 1], codeLayout === "vertical" ? "v" : "h");
-        }
+    /* ---------- Unlimited splitters (drag 0–100%, no limits) ---------- */
+    function applyEditorSizes() {
+      const ids = ["panel-html", "panel-css", "panel-js"];
+      ids.forEach(function(id, i) {
+        const el = document.getElementById(id);
+        if (el) el.style.flex = "0 0 " + editorSizes[i] + "%";
       });
     }
 
-    function setupHandle(handle, leftId, rightId, defaultDir) {
-      let dragging = false;
+    function applyMainSizes() {
+      const e = document.getElementById("code-editors");
+      const p = document.getElementById("preview-panel");
+      if (e) e.style.flex = "0 0 " + mainSizes[0] + "%";
+      if (p) p.style.flex = "0 0 " + mainSizes[1] + "%";
+    }
+
+    function setupSplitters() {
+      document.querySelectorAll("[data-split]").forEach(function(handle) {
+        const index = parseInt(handle.getAttribute("data-split"), 10);
+        makeSplitter(handle, function() {
+          return codeLayout === "vertical" ? "y" : "x";
+        }, function() {
+          return {
+            prev: editorSizes[index],
+            next: editorSizes[index + 1],
+            container: document.getElementById("code-editors")
+          };
+        }, function(np, nn) {
+          editorSizes[index] = np;
+          editorSizes[index + 1] = nn;
+          applyEditorSizes();
+        });
+      });
+      makeSplitter(document.getElementById("split-main"), function() {
+        return "x";
+      }, function() {
+        return {
+          prev: mainSizes[0],
+          next: mainSizes[1],
+          container: document.getElementById("code-body")
+        };
+      }, function(np, nn) {
+        mainSizes[0] = np;
+        mainSizes[1] = nn;
+        applyMainSizes();
+      });
+    }
+
+    function makeSplitter(handle, axisFn, stateFn, applyFn) {
       handle.addEventListener("mousedown", function(e) {
-        dragging = true;
+        e.preventDefault();
+        const axis = axisFn();
+        const state = stateFn();
+        const rect = state.container.getBoundingClientRect();
+        const containerSize = axis === "y" ? rect.height : rect.width;
+        const startPos = axis === "y" ? e.clientY : e.clientX;
+        const startPrev = state.prev;
+        const startNext = state.next;
+        const sum = startPrev + startNext;
         handle.classList.add("dragging");
         document.body.style.userSelect = "none";
-        document.body.style.cursor = handle.style.cursor || (handle.classList.contains("horizontal") ? "col-resize" : "row-resize");
-        e.preventDefault();
-      });
-      document.addEventListener("mousemove", function(e) {
-        if (!dragging) return;
-        const left = document.getElementById(leftId);
-        const right = document.getElementById(rightId);
-        const container = left.parentElement;
-        const rect = container.getBoundingClientRect();
-        const isHorizontal = handle.classList.contains("horizontal");
-        let pct;
-        if (isHorizontal) {
-          pct = ((e.clientX - rect.left) / rect.width) * 100;
-        } else {
-          pct = ((e.clientY - rect.top) / rect.height) * 100;
-        }
-        pct = Math.max(15, Math.min(85, pct));
-        left.style.flex = "none";
-        right.style.flex = "none";
-        if (isHorizontal) {
-          left.style.width = pct + "%";
-          right.style.width = (100 - pct) + "%";
-          left.style.height = "";
-          right.style.height = "";
-        } else {
-          left.style.height = pct + "%";
-          right.style.height = (100 - pct) + "%";
-          left.style.width = "";
-          right.style.width = "";
-        }
-      });
-      document.addEventListener("mouseup", function() {
-        if (dragging) {
-          dragging = false;
-          handle.classList.remove("dragging");
+        document.body.style.cursor = axis === "y" ? "row-resize" : "col-resize";
+        // Disable pointer events on iframes so mousemove keeps firing on the document
+        // (otherwise the preview iframe swallows mousemove events during drag).
+        var iframes = document.querySelectorAll("iframe");
+        iframes.forEach(function(f) {
+          f.style.pointerEvents = "none";
+        });
+        var onMove = function(ev) {
+          const pos = axis === "y" ? ev.clientY : ev.clientX;
+          const deltaPct = (pos - startPos) / containerSize * 100;
+          let np = startPrev + deltaPct;
+          let nn = startNext - deltaPct;
+          if (np < 0) {
+            nn += np;
+            np = 0;
+          }
+          if (nn < 0) {
+            np += nn;
+            nn = 0;
+          }
+          if (np > sum) {
+            np = sum;
+            nn = 0;
+          }
+          if (nn > sum) {
+            nn = sum;
+            np = 0;
+          }
+          applyFn(np, nn);
+        };
+        var onUp = function() {
+          document.removeEventListener("mousemove", onMove);
+          document.removeEventListener("mouseup", onUp);
           document.body.style.userSelect = "";
           document.body.style.cursor = "";
-        }
+          iframes.forEach(function(f) {
+            f.style.pointerEvents = "";
+          });
+          handle.classList.remove("dragging");
+          refreshAllEditors();
+        };
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("mouseup", onUp);
+      });
+    }
+
+    function setupEditorResizeObservers() {
+      const hosts = [
+        ["host-html", "html"],
+        ["host-css", "css"],
+        ["host-js", "js"]
+      ];
+      hosts.forEach(function(pair) {
+        const host = document.getElementById(pair[0]);
+        if (!host || !editors[pair[1]] || !window.ResizeObserver) return;
+        const ro = new ResizeObserver(function() {
+          editors[pair[1]].refresh();
+        });
+        ro.observe(host);
       });
     }
     /* ---------- Keyboard: Escape closes modal ---------- */
@@ -2431,6 +2737,7 @@
     }
     init();
   </script>
+
 </body>
 
 </html>
