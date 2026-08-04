@@ -6,7 +6,9 @@
 const SITE = {
   name: "GC Biology",
   tagline: "Study With the GC",
-  logo: "https://cdn.jsdelivr.net/gh/FunkyTimmy/GrouapChat-Biology@main/images/Gc%20Biology%20Logo.png", // e.g. "logo.png" — leave empty to use the built-in icon
+  logo: "https://cdn.jsdelivr.net/gh/FunkyTimmy/GrouapChat-Biology@main/images/Gc%20Biology%20Logo.png",
+  favicon: "https://cdn.jsdelivr.net/gh/FunkyTimmy/GrouapChat-Biology@main/images/Gc%20Biology%20Logo.png",
+  titleSuffix: " - GC Biology" // Shows after game name in title (e.g. Minecraft 1.12.2 - GC Biology
 };
 
 const GENRES = [
