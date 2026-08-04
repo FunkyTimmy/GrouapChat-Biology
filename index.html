@@ -1775,121 +1775,10 @@
     }
   </style>
 
+   <!-- Load Configuration File -->
+  <script src="config.js"></script>
+  
   <script>
-    /* ============================================================================
-     * ============================================================================
-     *  SITE CONFIGURATION
-     * ============================================================================
-     *  This is the ONLY section you need to edit. Everything is controlled from
-     *  here: your site name, logo, tagline, genres, and games.
-     *
-     *  ──────────────────────────────────────────────────────────────────────────
-     *  1. SITE — your website name, tagline, and logo
-     *  ──────────────────────────────────────────────────────────────────────────
-     *    name:    The website name shown in the header, footer, and browser tab.
-     *    tagline: A short subtitle shown in the footer.
-     *    logo:    A URL or relative path to your logo image (square, ~512x512).
-     *             Use "" (empty) to keep the built-in gamepad icon.
-     *             Examples:  "logo.png"  or  "https://example.com/logo.png"
-     *
-     *  ──────────────────────────────────────────────────────────────────────────
-     *  2. GENRES — edit this list to add / remove / rename genres
-     *  ──────────────────────────────────────────────────────────────────────────
-     *  The GENRES array controls every genre label shown on the site (filter
-     *  chips, card badges, etc.). Add, remove, or rename strings freely.
-     *
-     *  ──────────────────────────────────────────────────────────────────────────
-     *  3. GAMES — paste a game block into the array to add a game
-     *  ──────────────────────────────────────────────────────────────────────────
-     *  Copy the block below (including the curly braces) and paste it inside the
-     *  GAMES array. Fill in the fields:
-     *
-     *    {
-     *      id:          "my-game",              // unique slug
-     *      name:        "My Game",              // display name
-     *      description: "A short blurb.",       // shown on the card & player
-     *      genre:       "Arcade",               // MUST match a genre above
-     *      thumbnail:   "thumbs/my-game.jpg",   // image path or URL
-     *      fileUrl:     "https://cdn.jsdelivr.net/gh/user/repo@main/game.html",
-     *      popular:     false,                  // optional: true = shown as the
-     *                                            // "Most popular" hero banner
-     *    },
-     *
-     *  NOTE ON fileUrl: Use a jsDelivr URL pointing to the game's .html file.
-     *    The HTML is fetched (not loaded via iframe src) and rendered inside the
-     *    player, so the page hosting it stays on your own origin. A <base> tag is
-     *    auto-injected so the game's relative assets (images, scripts, etc.) still
-     *    resolve against the jsDelivr URL.
-     *
-     *    jsDelivr URL formats:
-     *      GitHub:  https://cdn.jsdelivr.net/gh/USER/REPO@VERSION/path/game.html
-     *      npm:     https://cdn.jsdelivr.net/npm/PACKAGE@VERSION/path/game.html
-     *
-     *    Relative paths (e.g. "games/snake.html") also work as long as the file
-     *    is served from the same origin as index.html and CORS allows the fetch.
-     * ============================================================================
-     * ============================================================================
-     */
-    const SITE = {
-      name: "GC Biology",
-      tagline: "Study With the GC",
-      logo: "https://cdn.jsdelivr.net/gh/FunkyTimmy/GrouapChat-Biology@main/images/Gc%20Biology%20Logo.png", // e.g. "logo.png" — leave empty to use the built-in icon
-    };
-    const GENRES = [
-      "Arcade",
-      "Puzzle",
-      "Strategy",
-      "Action",
-      "Adventure",
-      "Racing",
-    ];
-    const GAMES = [
-      // COOKIE CLICKER
-      {
-        id: "cookieclicker",
-        name: "Cookie Clicker",
-        description: "Click the cookie to get more cookies and the cycle repeats.",
-        genre: "Arcade",
-        thumbnail: "/images/cookieclicker.jpg",
-        fileUrl: "/games/cookieclicker.html",
-        popular: false,
-      },
-      
-      // MINECRAFT 1.12.2
-      {
-        id: "minecraft12",
-        name: "Minecraft 1.12.2",
-        description: "Eaglercraft 1.12.2. As similar to Minecraft 1.12.2 as possible. Join xenaMC on multiplayer!",
-        genre: "Arcade",
-        thumbnail: "/images/wp8691241-minecraft-thumbnail-wallpapers.jpg",
-        fileUrl: "/games/minecraft1-12-2.html",
-        popular: true,
-      },
-      
-      // ESCAPE ROAD
-      {
-        id: "escaperoad",
-        name: "Escape Road",
-        description: "You just robbed a bank and you have to run away from the police. Your wanted level gets higher every minute. How long can you survive?",
-        genre: "Arcade",
-        thumbnail: "https://cdn.jsdelivr.net/gh/FunkyTimmy/little-timmy-codepen@main/EscapeRoad.png",
-        fileUrl: "/games/escaperoad.html",
-        popular: false,
-      },
-      
-      // GEOMETRY DASH LITE
-      {
-        id: "gdlite",
-        name: "Geometry Dash Lite",
-        description: "Jump over obstacles while continuously moving to the beat.",
-        genre: "Arcade",
-        thumbnail: "/images/gdlite.jpg",
-        fileUrl: "/games/gdlite.html",
-        popular: false,
-      },
-      
-      // END GAMES DICTIONARY
-    ];
     /* ============================================================================
      *  APP LOGIC — you don't need to edit below this line
      * ============================================================================
@@ -2163,8 +2052,8 @@
 
     function renderNoGames() {
       return '<div class="empty"><div class="empty-icon lg gradient"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z"/></svg></div>' +
-        '<div><h3>No games yet</h3><p>Add your own games by editing the <code>GAMES</code> array at the top of <code>index.html</code>. Copy a game block, paste it in, and fill in the fields.</p></div>' +
-        '<div class="help-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><div><p class="help-title">Quick start</p><ol><li>Open <code>index.html</code></li><li>Edit the <code>GENRES</code> list at the top if you want</li><li>Copy a game block and paste it into the <code>GAMES</code> array</li><li>Save — refresh the page to see it</li></ol></div></div></div>';
+        '<div><h3>No games yet</h3><p>Add your own games by editing the <code>GAMES</code> array inside <code>config.js</code>. Copy a game block, paste it in, and fill in the fields.</p></div>' +
+        '<div class="help-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><div><p class="help-title">Quick start</p><ol><li>Open <code>config.js</code></li><li>Edit the <code>GENRES</code> list</li><li>Copy a game block and paste it into the <code>GAMES</code> array</li><li>Save — refresh the page to see it</li></ol></div></div></div>';
     }
 
     function clearFilters() {
@@ -2803,5 +2692,7 @@
   </script>
 
 </body>
+
+</html>
 
 </html>
