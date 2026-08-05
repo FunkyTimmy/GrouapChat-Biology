@@ -110,6 +110,8 @@ input, textarea { font-family: inherit }
 .game-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
 .card-thumb { position: relative; aspect-ratio: 16/9; width: 100%; overflow: hidden; background-color: var(--muted); border: none; padding: 0; display: flex; align-items: center; justify-content: center; }
 .card-thumb::before { content: ""; position: absolute; width: 30px; height: 30px; border: 3px solid var(--border); border-top-color: var(--emerald); border-radius: 50%; animation: spin 1s linear infinite; opacity: 0.6; z-index: 0; }
+.card-thumb.img-failed::before { display: none; }
+.card-thumb.img-failed::after { content: "No Preview"; font-size: 0.875rem; color: var(--muted-foreground); z-index: 1; }
 .card-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; position: relative; z-index: 1; }
 .game-card:hover .card-thumb img { transform: scale(1.04) }
 .card-genre { position: absolute; left: .625rem; top: .625rem; border-radius: .375rem; border: 1px solid rgba(255,255,255,.1); background: rgba(0,0,0,.55); padding: .125rem .5rem; font-size: .7rem; font-weight: 500; color: #fff; backdrop-filter: blur(4px); z-index: 2; }
