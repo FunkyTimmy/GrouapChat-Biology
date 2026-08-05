@@ -58,7 +58,6 @@ function renderHeader(pathname) {
   document.querySelectorAll(".nav-btn").forEach(b => {
     const route = b.dataset.route;
     let isActive = false;
-    // Clean URLs without .html
     if (route === './' && (pathname === './' || pathname === '/' || pathname === '' || pathname === 'index.html')) isActive = true;
     else if (route === pathname) isActive = true;
     b.classList.toggle("active", isActive);
@@ -70,7 +69,7 @@ function renderCard(item, type) {
   const playPath = type === 'app' ? `game?type=app&id=${item.id}` : `game?id=${item.id}`;
   return `<div class="game-card">
     <button class="card-thumb" onclick="navigate('${playPath}')" aria-label="Play ${escapeHtml(item.name)}">
-      <img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.name)} thumbnail" loading="lazy" onerror="this.style.display='none'">
+      <img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.name)} thumbnail" loading="lazy" onerror="this.style.display='none'; this.parentNode.classList.add('img-failed')">
       ${item.genre ? `<span class="card-genre">${escapeHtml(item.genre)}</span>` : ''}
       <div class="card-play"><span>Open</span></div>
     </button>
@@ -100,10 +99,18 @@ function toggleTheme() {
   const next = cur === "dark" ? "light" : "dark";
   document.documentElement.setAttribute("data-theme", next);
   localStorage.setItem(THEME_KEY, next);
+  updateThemeIcon(next);
+}
+function updateThemeIcon(theme) {
   const icon = document.getElementById("theme-icon");
-  if (icon) {
-    if (next === "dark") icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
-    else icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  if (!icon) return;
+  // Sun icon for dark mode (indicates you can switch to light)
+  if (theme === "dark") {
+    icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+  } 
+  // Moon icon for light mode (indicates you can switch to dark)
+  else {
+    icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
   }
 }
 
@@ -145,6 +152,8 @@ function initBase(pathname) {
   document.getElementById("year").textContent = new Date().getFullYear();
   applySiteConfig();
   loadTheme();
+  const saved = localStorage.getItem(THEME_KEY);
+  updateThemeIcon(saved || "dark"); // Initialize icon state
   favorites = loadFavorites();
   recent = loadRecent();
   updateFavCount();
