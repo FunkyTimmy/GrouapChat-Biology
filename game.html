@@ -25,13 +25,10 @@
     const type = params.get('type') || 'game';
     activeGame = type === 'app' ? APPS.find(a => a.id === id) : GAMES.find(g => g.id === id);
 
-    if (!activeGame) {
-      window.location.href = "404.html";
-    } else {
+    if (!activeGame) window.location.href = "404.html";
+    else {
       document.getElementById("p-title").textContent = activeGame.name;
       setTitle(activeGame.name);
-      
-      // Render the game inside the iframe directly
       fetch(activeGame.fileUrl, { mode: "cors" })
         .then(res => res.ok ? res.text() : Promise.reject("HTTP " + res.status))
         .then(html => {
@@ -45,10 +42,7 @@
           document.getElementById('game-frame').srcdoc = `<body style="color:white;background:#09090b;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center">Failed to load: ${err}</body>`;
         });
     }
-
-    function toggleFav() {
-      toggleFavorite(activeGame.id);
-    }
+    function toggleFav() { toggleFavorite(activeGame.id); }
     function updateFavBtn() {
       if (!activeGame) return;
       const fav = isFavorite(activeGame.id);
@@ -67,7 +61,6 @@
       if (document.fullscreenElement) document.exitFullscreen();
       else document.documentElement.requestFullscreen();
     }
-
     initBase('game.html');
     updateFavBtn();
   </script>
