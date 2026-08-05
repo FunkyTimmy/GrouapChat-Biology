@@ -1133,9 +1133,6 @@
       line-height: 1.6
     }
 
-    /* Only hide the ORIGINAL <textarea> elements (direct children) before CodeMirror
-   takes over. CodeMirror creates its OWN input <textarea> deeper inside .CodeMirror
-   which MUST stay visible for typing to work. */
     .editor-host>textarea {
       display: none
     }
@@ -1483,7 +1480,7 @@
   <!-- ============================ HEADER ============================ -->
   <header class="header">
     <div class="header-inner">
-      <button class="logo-btn" onclick="setView('games')" id="logo-btn" aria-label="Gc Biology home">
+      <button class="logo-btn" onclick="navigate('/')" id="logo-btn" aria-label="Gc Biology home">
         <span class="logo-badge" id="logo-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="6" y1="11" x2="10" y2="11"></line>
             <line x1="8" y1="9" x2="8" y2="13"></line>
@@ -1495,7 +1492,7 @@
       </button>
 
       <nav class="nav" role="navigation">
-        <button class="nav-btn active" data-view="games" onclick="setView('games')">
+        <button class="nav-btn active" data-route="/" onclick="navigate('/')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <line x1="6" y1="11" x2="10" y2="11"></line>
             <line x1="8" y1="9" x2="8" y2="13"></line>
@@ -1505,14 +1502,26 @@
           </svg>
           <span class="nav-label" style="display: inline;">Games</span>
         </button>
-        <button class="nav-btn" data-view="favorites" onclick="setView('favorites')">
+        
+        <!-- NEW APPS TAB -->
+        <button class="nav-btn" data-route="/apps" onclick="navigate('/apps')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span class="nav-label" style="display: inline;">Apps</span>
+        </button>
+
+        <button class="nav-btn" data-route="/favorites" onclick="navigate('/favorites')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
           </svg>
           <span class="nav-label" style="display: inline;">Favorites</span>
           <span class="nav-badge hidden" id="fav-count">0</span>
         </button>
-        <button class="nav-btn" data-view="code" onclick="setView('code')">
+        <button class="nav-btn" data-route="/code" onclick="navigate('/code')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="16 18 22 12 16 6"></polyline>
             <polyline points="8 6 2 12 8 18"></polyline>
@@ -1559,44 +1568,10 @@
   <!-- ============================ MAIN ============================ -->
   <main class="main">
     <!-- GAMES VIEW -->
-    <div id="view-games" class="container">
-      <section>
-        <div class="grid-header">
-          <div>
-            <h2>All games</h2>
-            <p>0 games available</p>
-          </div>
-          <div class="chips scrollbar-thin"><button class="chip active" onclick="setCategory('All')">All</button><button class="chip" onclick="setCategory('Arcade')">Arcade</button><button class="chip" onclick="setCategory('Puzzle')">Puzzle</button><button class="chip" onclick="setCategory('Strategy')">Strategy</button><button class="chip" onclick="setCategory('Action')">Action</button><button class="chip" onclick="setCategory('Adventure')">Adventure</button><button class="chip" onclick="setCategory('Racing')">Racing</button></div>
-        </div>
-        <div class="empty">
-          <div class="empty-icon lg gradient"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="6" y1="11" x2="10" y2="11"></line>
-              <line x1="8" y1="9" x2="8" y2="13"></line>
-              <line x1="15" y1="12" x2="15.01" y2="12"></line>
-              <line x1="18" y1="10" x2="18.01" y2="10"></line>
-              <path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z"></path>
-            </svg></div>
-          <div>
-            <h3>No games yet</h3>
-            <p>Add your own games by editing the <code>GAMES</code> array at the top of <code>index.html</code>. Copy a game block, paste it in, and fill in the fields.</p>
-          </div>
-          <div class="help-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px">
-              <circle cx="12" cy="12" r="3"></circle>
-              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-            </svg>
-            <div>
-              <p class="help-title">Quick start</p>
-              <ol>
-                <li>Open <code>index.html</code></li>
-                <li>Edit the <code>GENRES</code> list at the top if you want</li>
-                <li>Copy a game block and paste it into the <code>GAMES</code> array</li>
-                <li>Save — refresh the page to see it</li>
-              </ol>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+    <div id="view-games" class="container"></div>
+    
+    <!-- APPS VIEW (NEW) -->
+    <div id="view-apps" class="container hidden"></div>
 
     <!-- FAVORITES VIEW -->
     <div id="view-favorites" class="container hidden"></div>
@@ -1790,25 +1765,25 @@
     let activeGame = null;
     let favorites = [];
     let recent = [];
-    let codeLayout = "vertical"; // vertical = editors stacked, horizontal = side by side
+    let codeLayout = "vertical"; 
     let codePreviewKey = 0;
+    let searchTimer = null;
+    
     /* ---------- Storage keys ---------- */
-    const FAV_KEY = "arcade:favorites"; // localStorage (primary)
-    const FAV_COOKIE = "arcade:favorites"; // legacy cookie (migration only)
+    const FAV_KEY = "arcade:favorites";
+    const FAV_COOKIE = "arcade:favorites";
     const RECENT_KEY = "arcade:recent-games";
     const CODE_KEY = "arcade:code-editor";
     const THEME_KEY = "arcade:theme";
+    
     /* ---------- Default code for the editor ---------- */
     const DEFAULT_CODE = {
       html: '<div class="card">\n  <h1>Hello, World! 👋</h1>\n  <p>Edit the HTML, CSS, and JS panels to see live changes.</p>\n  <button id="btn">Click me</button>\n</div>\n',
       css: '* {\n  box-sizing: border-box;\n}\n\nbody {\n  margin: 0;\n  min-height: 100vh;\n  display: grid;\n  place-items: center;\n  font-family: system-ui, sans-serif;\n  background: linear-gradient(135deg, #0f172a, #1e293b);\n  color: #e2e8f0;\n}\n\n.card {\n  text-align: center;\n  padding: 2.5rem 3rem;\n  border-radius: 1rem;\n  background: rgba(30, 41, 59, 0.6);\n  border: 1px solid rgba(148, 163, 184, 0.15);\n  backdrop-filter: blur(8px);\n  box-shadow: 0 20px 60px -20px rgba(0, 0, 0, 0.5);\n}\n\nh1 {\n  margin: 0 0 0.5rem;\n  font-size: 1.75rem;\n}\n\np {\n  margin: 0 0 1.5rem;\n  color: #94a3b8;\n}\n\nbutton {\n  padding: 0.6rem 1.5rem;\n  border: none;\n  border-radius: 0.5rem;\n  font-size: 0.95rem;\n  font-weight: 600;\n  color: white;\n  background: linear-gradient(135deg, #10b981, #14b8a6);\n  cursor: pointer;\n  transition: transform 0.15s ease, box-shadow 0.15s ease;\n}\n\nbutton:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 8px 24px -8px rgba(16, 185, 129, 0.6);\n}\n\nbutton:active {\n  transform: translateY(0);\n}\n',
       js: 'const btn = document.getElementById(\'btn\');\nlet count = 0;\n\nbtn.addEventListener(\'click\', () => {\n  count++;\n  btn.textContent = \'Clicked \' + count + \' times\';\n});\n'
     };
-    let codeState = {
-      html: "",
-      css: "",
-      js: ""
-    };
+    let codeState = { html: "", css: "", js: "" };
+    
     /* ---------- Cookie helpers ---------- */
     function getCookie(name) {
       const match = document.cookie.split("; ").find(r => r.startsWith(name + "="));
@@ -1818,9 +1793,9 @@
     function setCookie(name, value, maxAgeDays) {
       document.cookie = name + "=" + encodeURIComponent(value) + "; max-age=" + (maxAgeDays * 86400) + "; path=/; SameSite=Lax";
     }
-    /* ---------- Favorites (localStorage, with one-time cookie migration) ---------- */
+    
+    /* ---------- Favorites ---------- */
     function loadFavorites() {
-      // 1) Try localStorage first (primary store — survives across sessions).
       try {
         const raw = localStorage.getItem(FAV_KEY);
         if (raw) {
@@ -1828,16 +1803,13 @@
           if (Array.isArray(p)) return p.filter(v => typeof v === "string");
         }
       } catch {}
-      // 2) Fall back to the legacy cookie (one-time migration to localStorage).
       const raw = getCookie(FAV_COOKIE);
       if (raw) {
         try {
           const p = JSON.parse(raw);
           if (Array.isArray(p)) {
             const arr = p.filter(v => typeof v === "string");
-            try {
-              localStorage.setItem(FAV_KEY, JSON.stringify(arr));
-            } catch {}
+            try { localStorage.setItem(FAV_KEY, JSON.stringify(arr)); } catch {}
             return arr;
           }
         } catch {}
@@ -1846,14 +1818,10 @@
     }
 
     function saveFavorites() {
-      try {
-        localStorage.setItem(FAV_KEY, JSON.stringify(favorites));
-      } catch {}
+      try { localStorage.setItem(FAV_KEY, JSON.stringify(favorites)); } catch {}
     }
 
-    function isFavorite(id) {
-      return favorites.includes(id);
-    }
+    function isFavorite(id) { return favorites.includes(id); }
 
     function toggleFavorite(id) {
       if (favorites.includes(id)) favorites = favorites.filter(x => x !== id);
@@ -1871,33 +1839,31 @@
         el.classList.remove("hidden");
       } else el.classList.add("hidden");
     }
+    
     /* ---------- Recent games ---------- */
     function loadRecent() {
       try {
         const raw = localStorage.getItem(RECENT_KEY);
         return raw ? JSON.parse(raw) : [];
-      } catch {
-        return [];
-      }
+      } catch { return []; }
     }
 
     function saveRecent() {
-      try {
-        localStorage.setItem(RECENT_KEY, JSON.stringify(recent));
-      } catch {}
+      try { localStorage.setItem(RECENT_KEY, JSON.stringify(recent)); } catch {}
     }
 
     function addRecent(game) {
       recent = [game, ...recent.filter(g => g.id !== game.id)].slice(0, 8);
       saveRecent();
     }
+    
     /* ---------- Helpers ---------- */
     function getPopular() {
       return GAMES.find(g => g.popular) || GAMES[0];
     }
 
     function getGameById(id) {
-      return GAMES.find(g => g.id === id);
+      return GAMES.find(g => g.id === id) || APPS.find(a => a.id === id);
     }
 
     function searchGames(query, category) {
@@ -1912,6 +1878,7 @@
     function escapeHtml(s) {
       return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
+    
     /* ---------- Theme ---------- */
     function loadTheme() {
       const saved = localStorage.getItem(THEME_KEY);
@@ -1940,37 +1907,126 @@
         icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
       }
     }
-    /* ---------- View switching ---------- */
-    function setView(view) {
-      currentView = view;
-      document.getElementById("view-games").classList.toggle("hidden", view !== "games");
-      document.getElementById("view-favorites").classList.toggle("hidden", view !== "favorites");
-      document.getElementById("view-code").classList.toggle("hidden", view !== "code");
-      document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.view === view));
-      if (view !== "games") {
-        searchQuery = "";
-        activeCategory = "All";
-        syncSearchInputs();
+    
+    /* ========================================================================
+     * ROUTER (Client-side URL routing)
+     * ======================================================================== */
+    function navigate(path) {
+      try {
+        if (window.location.pathname + window.location.search !== path) {
+          history.pushState({}, "", path);
+        }
+      } catch(e) {
+        console.warn("pushState failed, falling back to hash.", e);
+        window.location.hash = path;
       }
-      renderCurrentView();
-      if (view === "code") initCodeEditor();
+      handleRoute();
     }
 
+    function setTitle(prefix) {
+      if (prefix && prefix.trim() !== "") {
+        document.title = prefix + (SITE.titleSuffix || "");
+      } else {
+        document.title = SITE.name; // Normal home title
+      }
+    }
+
+    function handleRoute() {
+      const path = window.location.pathname;
+      const params = new URLSearchParams(window.location.search);
+      const query = params.get('q') || "";
+
+      closePlayer(true); // close modal without triggering history back
+
+      if (path === '/' || path === '/index.html' || path === '') {
+        currentView = "games";
+        searchQuery = "";
+        activeCategory = "All";
+        setTitle("");
+        renderGames();
+      } else if (path === '/favorites') {
+        currentView = "favorites";
+        setTitle("Favorites");
+        renderFavorites();
+      } else if (path === '/code') {
+        currentView = "code";
+        setTitle("Code Editor");
+        initCodeEditor();
+      } else if (path === '/apps') {
+        currentView = "apps";
+        setTitle("Apps");
+        renderApps();
+      } else if (path === '/search') {
+        currentView = "games";
+        searchQuery = query;
+        activeCategory = "All";
+        setTitle("Search: " + query);
+        syncSearchInputs();
+        renderGames();
+      } else if (path.startsWith('/category/')) {
+        const cat = decodeURIComponent(path.split('/category/')[1]);
+        currentView = "games";
+        activeCategory = cat;
+        searchQuery = "";
+        setTitle(cat);
+        renderGames();
+      } else if (path.startsWith('/games/')) {
+        const id = path.split('/games/')[1];
+        currentView = "games";
+        renderGames(); 
+        playItem(id, 'game', true);
+      } else if (path.startsWith('/apps/')) {
+        const id = path.split('/apps/')[1];
+        currentView = "apps";
+        renderApps();
+        playItem(id, 'app', true);
+      } else {
+        navigate('/');
+      }
+      
+      // Sync search inputs on route change
+      syncSearchInputs();
+      
+      // Update active state in nav
+      document.querySelectorAll(".nav-btn").forEach(b => {
+        const route = b.dataset.route;
+        let isActive = false;
+        if (route === '/' && (path === '/' || path === '/index.html')) isActive = true;
+        else if (route === path) isActive = true;
+        b.classList.toggle("active", isActive);
+      });
+
+      // Show/hide views
+      document.getElementById("view-games").classList.toggle("hidden", currentView !== "games");
+      document.getElementById("view-favorites").classList.toggle("hidden", currentView !== "favorites");
+      document.getElementById("view-code").classList.toggle("hidden", currentView !== "code");
+      document.getElementById("view-apps").classList.toggle("hidden", currentView !== "apps");
+    }
+
+    window.addEventListener("popstate", handleRoute);
+    
     function syncSearchInputs() {
       document.getElementById("search").value = searchQuery;
       document.getElementById("search-mobile").value = searchQuery;
     }
 
     function onSearch(val) {
-      searchQuery = val;
-      syncSearchInputs();
-      renderGames();
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        if (val.trim() === "") {
+          navigate('/');
+        } else {
+          navigate('/search?q=' + encodeURIComponent(val));
+        }
+      }, 300);
     }
 
     function renderCurrentView() {
       if (currentView === "games") renderGames();
       else if (currentView === "favorites") renderFavorites();
+      else if (currentView === "apps") renderApps();
     }
+    
     /* ---------- Render: Games ---------- */
     function renderGames() {
       const container = document.getElementById("view-games");
@@ -1992,7 +2048,7 @@
         html += noGamesAtAll ? renderNoGames() : renderEmptySearch();
       } else {
         html += '<div class="game-grid">';
-        filtered.forEach(g => html += renderCard(g));
+        filtered.forEach(g => html += renderCard(g, 'game'));
         html += '</div>';
       }
       html += '</section>';
@@ -2006,13 +2062,13 @@
         '<div class="hero-eyebrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Most popular</div>' +
         '<div><h2>' + escapeHtml(game.name) + '</h2><p style="margin-top:.25rem;font-size:.875rem;color:var(--muted-foreground)">Welcome to ' + escapeHtml(SITE.name) + '.</p></div>' +
         '<p class="desc">' + escapeHtml(game.description) + '</p>' +
-        '<div class="hero-actions"><button class="btn btn-emerald btn-lg" onclick="playGame(\'' + game.id + '\')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Play now</button>' +
+        '<div class="hero-actions"><button class="btn btn-emerald btn-lg" onclick="navigate(\'/games/' + game.id + '\')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Play now</button>' +
         '<span class="muted-sm">No sign-up · plays instantly</span></div>' +
         '</div></div></div></section>';
     }
 
     function renderRecent() {
-      let cards = recent.map(g => '<div>' + renderCard(g) + '</div>').join("");
+      let cards = recent.map(g => '<div>' + renderCard(g, 'game') + '</div>').join("");
       return '<section style="margin-bottom:2.5rem"><div class="section-title"><p class="eyebrow">Pick up where you left off</p><h2>Continue playing</h2></div>' +
         '<div class="recent-row scrollbar-thin">' + cards + '</div></section>';
     }
@@ -2020,34 +2076,30 @@
     function renderChips() {
       const opts = ["All"].concat(GENRES);
       return '<div class="chips scrollbar-thin">' + opts.map(o =>
-        '<button class="chip' + (o === activeCategory ? " active" : "") + '" onclick="setCategory(\'' + o.replace(/'/g, "\\'") + '\')">' + escapeHtml(o) + '</button>'
+        '<button class="chip' + (o === activeCategory ? " active" : "") + '" onclick="navigate(\'/category/' + encodeURIComponent(o) + '\')">' + escapeHtml(o) + '</button>'
       ).join("") + '</div>';
     }
 
-    function setCategory(c) {
-      activeCategory = c;
-      renderGames();
-    }
-
-    function renderCard(game) {
-      const fav = isFavorite(game.id);
+    function renderCard(item, type) {
+      const fav = isFavorite(item.id);
+      const playPath = type === 'app' ? '/apps/' + item.id : '/games/' + item.id;
       return '<div class="game-card">' +
-        '<button class="card-thumb" onclick="playGame(\'' + game.id + '\')" aria-label="Play ' + escapeHtml(game.name) + '">' +
-        '<img src="' + escapeHtml(game.thumbnail) + '" alt="' + escapeHtml(game.name) + ' thumbnail" loading="lazy" onerror="this.outerHTML=\'<div class=\\\'card-thumb-fallback\\\'><svg width=32 height=32 viewBox=\\\'0 0 24 24\\\' fill=\\\'none\\\' stroke=\\\'currentColor\\\' stroke-width=\\\'2\\\'><rect x=\\\'3\\\' y=\\\'3\\\' width=\\\'18\\\' height=\\\'18\\\' rx=\\\'2\\\'/><circle cx=\\\'9\\\' cy=\\\'9\\\' r=\\\'2\\\'/><path d=\\\'M21 15l-5-5L5 21\\\'/></svg></div>\'">' +
-        '<span class="card-genre">' + escapeHtml(game.genre) + '</span>' +
-        '<div class="card-play"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>Play</span></div>' +
+        '<button class="card-thumb" onclick="navigate(\'' + playPath + '\')" aria-label="Play ' + escapeHtml(item.name) + '">' +
+        '<img src="' + escapeHtml(item.thumbnail) + '" alt="' + escapeHtml(item.name) + ' thumbnail" loading="lazy" onerror="this.outerHTML=\'<div class=\\\'card-thumb-fallback\\\'><svg width=32 height=32 viewBox=\\\'0 0 24 24\\\' fill=\\\'none\\\' stroke=\\\'currentColor\\\' stroke-width=\\\'2\\\'><rect x=\\\'3\\\' y=\\\'3\\\' width=\\\'18\\\' height=\\\'18\\\' rx=\\\'2\\\'/><circle cx=\\\'9\\\' cy=\\\'9\\\' r=\\\'2\\\'/><path d=\\\'M21 15l-5-5L5 21\\\'/></svg></div>\'">' +
+        (item.genre ? '<span class="card-genre">' + escapeHtml(item.genre) + '</span>' : '') +
+        '<div class="card-play"><span><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>Open</span></div>' +
         '</button>' +
-        '<button class="fav-btn' + (fav ? " active" : "") + '" onclick="event.stopPropagation();toggleFavorite(\'' + game.id + '\')" aria-label="' + (fav ? "Remove from" : "Add to") + ' favorites" aria-pressed="' + fav + '">' +
+        '<button class="fav-btn' + (fav ? " active" : "") + '" onclick="event.stopPropagation();toggleFavorite(\'' + item.id + '\')" aria-label="' + (fav ? "Remove from" : "Add to") + ' favorites" aria-pressed="' + fav + '">' +
         '<svg width="16" height="16" viewBox="0 0 24 24" fill="' + (fav ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
         '</button>' +
-        '<div class="card-body"><h3>' + escapeHtml(game.name) + '</h3><p>' + escapeHtml(game.description) + '</p></div>' +
+        '<div class="card-body"><h3>' + escapeHtml(item.name) + '</h3><p>' + escapeHtml(item.description) + '</p></div>' +
         '</div>';
     }
 
     function renderEmptySearch() {
       return '<div class="empty"><div class="empty-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="8" x2="8" y2="8"/></svg></div>' +
         '<div><h3>No games found</h3><p>Try a different search term or genre.</p></div>' +
-        '<button class="btn btn-outline btn-sm" onclick="clearFilters()">Clear filters</button></div>';
+        '<button class="btn btn-outline btn-sm" onclick="navigate(\'/\')">Clear filters</button></div>';
     }
 
     function renderNoGames() {
@@ -2055,13 +2107,25 @@
         '<div><h3>No games yet</h3><p>Add your own games by editing the <code>GAMES</code> array inside <code>config.js</code>. Copy a game block, paste it in, and fill in the fields.</p></div>' +
         '<div class="help-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><div><p class="help-title">Quick start</p><ol><li>Open <code>config.js</code></li><li>Edit the <code>GENRES</code> list</li><li>Copy a game block and paste it into the <code>GAMES</code> array</li><li>Save — refresh the page to see it</li></ol></div></div></div>';
     }
-
-    function clearFilters() {
-      searchQuery = "";
-      activeCategory = "All";
-      syncSearchInputs();
-      renderGames();
+    
+    /* ---------- Render: Apps ---------- */
+    function renderApps() {
+      const container = document.getElementById("view-apps");
+      let html = '<section><div class="grid-header"><div>';
+      html += '<h2>All apps</h2>';
+      html += '<p>' + APPS.length + (APPS.length === 1 ? ' app' : ' apps') + ' available</p>';
+      html += '</div></div>';
+      if (APPS.length === 0) {
+        html += '<div class="empty"><div class="empty-icon lg gradient"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg></div><div><h3>No apps yet</h3><p>Add your own apps by editing the <code>APPS</code> array inside <code>config.js</code>.</p></div></div>';
+      } else {
+        html += '<div class="game-grid">';
+        APPS.forEach(a => html += renderCard(a, 'app'));
+        html += '</div>';
+      }
+      html += '</section>';
+      container.innerHTML = html;
     }
+
     /* ---------- Render: Favorites ---------- */
     function renderFavorites() {
       const container = document.getElementById("view-favorites");
@@ -2074,9 +2138,9 @@
       if (favGames.length === 0) {
         html += '<div class="empty"><div class="empty-icon lg"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/><line x1="2" y1="2" x2="22" y2="22"/></svg></div>' +
           '<div><h3>No favorites yet</h3><p>Tap the heart on any game card to save it here. Your favorites are saved in your browser and persist across sessions.</p></div>' +
-          '<button class="btn btn-emerald" onclick="setView(\'games\')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z"/></svg> Browse games</button></div>';
+          '<button class="btn btn-emerald" onclick="navigate(\'/\')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z"/></svg> Browse games</button></div>';
       } else {
-        html += '<div class="game-grid">' + favGames.map(renderCard).join("") + '</div>';
+        html += '<div class="game-grid">' + favGames.map(g => renderCard(g, g.genre ? 'game' : 'app')).join("") + '</div>';
       }
       container.innerHTML = html;
     }
@@ -2087,71 +2151,63 @@
       updateFavCount();
       renderFavorites();
     }
+    
     /* ---------- Game player modal ---------- */
-    /* Injects a <base> tag so relative URLs in the fetched game HTML resolve
-       against the original jsDelivr URL (not the host page). */
     function injectBaseTag(html, baseUrl) {
       const baseTag = '<base href="' + escapeHtml(baseUrl) + '">';
       if (/<head[^>]*>/i.test(html)) {
-        return html.replace(/<head[^>]*>/i, function(m) {
-          return m + baseTag;
-        });
+        return html.replace(/<head[^>]*>/i, function(m) { return m + baseTag; });
       }
       if (/<html[^>]*>/i.test(html)) {
-        return html.replace(/<html[^>]*>/i, function(m) {
-          return m + '<head>' + baseTag + '</head>';
-        });
+        return html.replace(/<html[^>]*>/i, function(m) { return m + '<head>' + baseTag + '</head>'; });
       }
       return baseTag + html;
     }
-    async function playGame(id) {
-      const game = getGameById(id);
-      if (!game) return;
-      activeGame = game;
-      addRecent(game);
+    
+    async function playItem(id, type, skipNav = false) {
+      const item = type === 'app' ? APPS.find(a => a.id === id) : GAMES.find(g => g.id === id);
+      if (!item) return;
+      activeGame = item;
+      addRecent(item);
       
-      // Update browser tab title to include the game name and the configured suffix
-      document.title = game.name + (SITE.titleSuffix || "");
+      setTitle(item.name);
+      
+      if (!skipNav) {
+        navigate(type === 'app' ? '/apps/' + id : '/games/' + id);
+      }
       
       const modal = document.getElementById("player-modal");
-      document.getElementById("modal-genre").textContent = game.genre;
-      document.getElementById("modal-title").textContent = game.name;
-      document.getElementById("modal-loading-text").textContent = "Loading " + game.name + "…";
+      document.getElementById("modal-genre").textContent = item.genre || "App";
+      document.getElementById("modal-title").textContent = item.name;
+      document.getElementById("modal-loading-text").textContent = "Loading " + item.name + "…";
       const loading = document.getElementById("modal-loading");
       const error = document.getElementById("modal-error");
       loading.classList.remove("hidden");
       error.classList.add("hidden");
       const frame = document.getElementById("modal-frame");
-      // Reset any previously loaded content
       frame.onload = null;
       frame.removeAttribute("srcdoc");
       frame.src = "about:blank";
       modal.classList.remove("hidden");
       document.body.style.overflow = "hidden";
       updateModalFav();
-      // Fetch the game's HTML and load it via srcdoc (NOT a direct iframe src).
-      // This keeps the document on our own origin while a <base> tag makes sure
-      // relative assets still resolve against the jsDelivr URL.
+      
       try {
-        const res = await fetch(game.fileUrl, {
-          mode: "cors"
-        });
+        const res = await fetch(item.fileUrl, { mode: "cors" });
         if (!res.ok) throw new Error("HTTP " + res.status + (res.statusText ? " " + res.statusText : ""));
         let html = await res.text();
-        html = injectBaseTag(html, game.fileUrl);
-        frame.onload = function() {
-          loading.classList.add("hidden");
-        };
+        html = injectBaseTag(html, item.fileUrl);
+        frame.onload = function() { loading.classList.add("hidden"); };
         frame.srcdoc = html;
       } catch (err) {
         loading.classList.add("hidden");
         error.classList.remove("hidden");
         const msg = document.getElementById("modal-error-msg");
-        if (msg) msg.textContent = (err.message || "Network error") + " — check that fileUrl is a valid jsDelivr URL.";
+        if (msg) msg.textContent = (err.message || "Network error") + " — check that fileUrl is a valid URL.";
       }
     }
 
-    function closePlayer() {
+    function closePlayer(skipNav = false) {
       document.getElementById("player-modal").classList.add("hidden");
       const frame = document.getElementById("modal-frame");
       frame.onload = null;
@@ -2160,46 +2216,49 @@
       document.getElementById("modal-loading").classList.add("hidden");
       document.getElementById("modal-error").classList.add("hidden");
       document.body.style.overflow = "";
-      activeGame = null;
       
-      // Revert browser tab title back to the default site name
-      document.title = SITE.name + (SITE.titleSuffix || "");
+      if (!skipNav) {
+        const path = window.location.pathname;
+        if (path.startsWith('/games/') || path.startsWith('/apps/')) {
+          if (window.history.length > 1) {
+            window.history.back();
+          } else {
+            navigate('/');
+          }
+        }
+      }
+      
+      activeGame = null;
+      // Restore title based on the view we are returning to
+      if (currentView === 'games') setTitle(activeCategory !== 'All' ? activeCategory : (searchQuery ? "Search: " + searchQuery : ""));
+      else if (currentView === 'favorites') setTitle("Favorites");
+      else if (currentView === 'code') setTitle("Code Editor");
+      else if (currentView === 'apps') setTitle("Apps");
     }
 
     function openGameNewTab() {
       if (!activeGame) return;
       const game = activeGame;
       const frame = document.getElementById("modal-frame");
-      // Reuse the HTML already fetched & rendered in the modal (with <base> tag
-      // injected) so the new tab loads the game exactly like Play does. If the
-      // modal hasn't loaded it yet, fall back to fetching on the spot.
       let html = frame && frame.getAttribute("srcdoc");
       if (html && html.trim() !== "") {
-        const blob = new Blob([html], {
-          type: "text/html"
-        });
+        const blob = new Blob([html], { type: "text/html" });
         const url = URL.createObjectURL(blob);
         window.open(url, "_blank");
         setTimeout(() => URL.revokeObjectURL(url), 10000);
         return;
       }
-      // Fallback: fetch fresh, inject base tag, open as blob
       (async () => {
         try {
-          const res = await fetch(game.fileUrl, {
-            mode: "cors"
-          });
+          const res = await fetch(game.fileUrl, { mode: "cors" });
           if (!res.ok) throw new Error("HTTP " + res.status);
           let fetched = await res.text();
           fetched = injectBaseTag(fetched, game.fileUrl);
-          const blob = new Blob([fetched], {
-            type: "text/html"
-          });
+          const blob = new Blob([fetched], { type: "text/html" });
           const url = URL.createObjectURL(blob);
           window.open(url, "_blank");
           setTimeout(() => URL.revokeObjectURL(url), 10000);
         } catch (err) {
-          // Last resort: open the raw URL directly
           window.open(game.fileUrl, "_blank", "noopener,noreferrer");
         }
       })();
@@ -2225,16 +2284,13 @@
     function toggleFavoriteModal() {
       if (activeGame) toggleFavorite(activeGame.id);
     }
+    
     /* ---------- Code editor (CodeMirror-powered) ---------- */
     let codeInited = false;
     let previewTimer = null;
-    let editors = {
-      html: null,
-      css: null,
-      js: null
-    };
-    let editorSizes = [33.33, 33.33, 33.34]; // % of editors region (html, css, js)
-    let mainSizes = [60, 40]; // % of code-body [editors, preview]
+    let editors = { html: null, css: null, js: null };
+    let editorSizes = [33.33, 33.33, 33.34]; 
+    let mainSizes = [60, 40]; 
     let cmLoaded = false;
     const CM_VER = "5.65.16";
     const CM_BASE = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/" + CM_VER;
@@ -2244,8 +2300,7 @@
     function loadScript(src) {
       return new Promise((res, rej) => {
         const s = document.createElement("script");
-        s.src = src;
-        s.async = true;
+        s.src = src; s.async = true;
         s.onload = () => res();
         s.onerror = () => rej(new Error("Failed to load " + src));
         document.head.appendChild(s);
@@ -2255,13 +2310,13 @@
     function loadStyle(href) {
       return new Promise((res, rej) => {
         const l = document.createElement("link");
-        l.rel = "stylesheet";
-        l.href = href;
+        l.rel = "stylesheet"; l.href = href;
         l.onload = () => res();
         l.onerror = () => rej(new Error("Failed to load " + href));
         document.head.appendChild(l);
       });
     }
+    
     async function loadCodeEditorLibs() {
       if (cmLoaded) return;
       await Promise.all([
@@ -2313,35 +2368,22 @@
         indentWithTabs: false,
         smartIndent: true,
         electricChars: true,
-        autoCloseBrackets: {
-          pairs: '()[]{}\'\'""``',
-          triples: "",
-          explode: "[]{}"
-        },
+        autoCloseBrackets: { pairs: '()[]{}\'\'""``', triples: "", explode: "[]{}" },
         autoCloseTags: true,
         matchBrackets: true,
         styleActiveLine: true,
         placeholder: placeholder,
         extraKeys: {
-          "Tab": function(cm) {
-            cm.replaceSelection("  ", "end");
-          },
-          "Ctrl-Enter": function() {
-            updatePreview();
-          },
-          "Cmd-Enter": function() {
-            updatePreview();
-          },
-          "Ctrl-S": function() {
-            saveCodeState();
-          },
-          "Cmd-S": function() {
-            saveCodeState();
-          },
+          "Tab": function(cm) { cm.replaceSelection("  ", "end"); },
+          "Ctrl-Enter": function() { updatePreview(); },
+          "Cmd-Enter": function() { updatePreview(); },
+          "Ctrl-S": function() { saveCodeState(); },
+          "Cmd-S": function() { saveCodeState(); },
         },
       });
       return cm;
     }
+    
     async function initCodeEditor() {
       if (codeInited) {
         refreshAllEditors();
@@ -2356,7 +2398,6 @@
         codeInited = false;
         return;
       }
-      // Load saved code (empty by default)
       try {
         const saved = localStorage.getItem(CODE_KEY);
         if (saved) {
@@ -2368,14 +2409,14 @@
           }
         }
       } catch {}
-      // Create the three CodeMirror instances
+      
       editors.html = makeEditor("editor-html", "htmlmixed", "<!-- Write HTML here -->");
       editors.css = makeEditor("editor-css", "css", "/* Write CSS here */");
       editors.js = makeEditor("editor-js", "javascript", "// Write JavaScript here");
       editors.html.setValue(codeState.html);
       editors.css.setValue(codeState.css);
       editors.js.setValue(codeState.js);
-      // Change handler — sync state, debounced preview, autosave
+      
       const onChange = function() {
         codeState.html = editors.html.getValue();
         codeState.css = editors.css.getValue();
@@ -2387,13 +2428,13 @@
       editors.html.on("change", onChange);
       editors.css.on("change", onChange);
       editors.js.on("change", onChange);
-      // Layout, splitters, resize observers
+      
       applyEditorSizes();
       applyMainSizes();
       setupSplitters();
       setupEditorResizeObservers();
       updatePreview();
-      // Fullscreen icon toggle
+      
       document.addEventListener("fullscreenchange", function() {
         const icon = document.getElementById("fs-icon");
         if (document.fullscreenElement) {
@@ -2414,9 +2455,7 @@
     }
 
     function saveCodeState() {
-      try {
-        localStorage.setItem(CODE_KEY, JSON.stringify(codeState));
-      } catch {}
+      try { localStorage.setItem(CODE_KEY, JSON.stringify(codeState)); } catch {}
     }
 
     function buildPreviewDoc() {
@@ -2428,16 +2467,10 @@
       if (frame) frame.srcdoc = buildPreviewDoc();
     }
 
-    function codeRun() {
-      updatePreview();
-    }
+    function codeRun() { updatePreview(); }
 
     function codeReset() {
-      codeState = {
-        html: "",
-        css: "",
-        js: ""
-      };
+      codeState = { html: "", css: "", js: "" };
       if (editors.html) {
         editors.html.setValue("");
         editors.css.setValue("");
@@ -2451,25 +2484,17 @@
       if (!editors.html) return;
       try {
         if (window.html_beautify) {
-          const v = html_beautify(editors.html.getValue(), {
-            indent_size: 2,
-            wrap_line_length: 0,
-            end_with_newline: false
-          });
+          const v = html_beautify(editors.html.getValue(), { indent_size: 2, wrap_line_length: 0, end_with_newline: false });
           editors.html.setValue(v);
           codeState.html = v;
         }
         if (window.css_beautify) {
-          const v = css_beautify(editors.css.getValue(), {
-            indent_size: 2
-          });
+          const v = css_beautify(editors.css.getValue(), { indent_size: 2 });
           editors.css.setValue(v);
           codeState.css = v;
         }
         if (window.js_beautify) {
-          const v = js_beautify(editors.js.getValue(), {
-            indent_size: 2
-          });
+          const v = js_beautify(editors.js.getValue(), { indent_size: 2 });
           editors.js.setValue(v);
           codeState.js = v;
         }
@@ -2481,9 +2506,7 @@
     }
 
     function codeNewTab() {
-      const blob = new Blob([buildPreviewDoc()], {
-        type: "text/html"
-      });
+      const blob = new Blob([buildPreviewDoc()], { type: "text/html" });
       const url = URL.createObjectURL(blob);
       window.open(url, "_blank", "noopener,noreferrer");
       setTimeout(() => URL.revokeObjectURL(url), 10000);
@@ -2506,7 +2529,8 @@
       if (document.fullscreenElement) document.exitFullscreen();
       else el.requestFullscreen();
     }
-    /* ---------- Unlimited splitters (drag 0–100%, no limits) ---------- */
+    
+    /* ---------- Unlimited splitters ---------- */
     function applyEditorSizes() {
       const ids = ["panel-html", "panel-css", "panel-js"];
       ids.forEach(function(id, i) {
@@ -2568,33 +2592,17 @@
         handle.classList.add("dragging");
         document.body.style.userSelect = "none";
         document.body.style.cursor = axis === "y" ? "row-resize" : "col-resize";
-        // Disable pointer events on iframes so mousemove keeps firing on the document
-        // (otherwise the preview iframe swallows mousemove events during drag).
         var iframes = document.querySelectorAll("iframe");
-        iframes.forEach(function(f) {
-          f.style.pointerEvents = "none";
-        });
+        iframes.forEach(function(f) { f.style.pointerEvents = "none"; });
         var onMove = function(ev) {
           const pos = axis === "y" ? ev.clientY : ev.clientX;
           const deltaPct = (pos - startPos) / containerSize * 100;
           let np = startPrev + deltaPct;
           let nn = startNext - deltaPct;
-          if (np < 0) {
-            nn += np;
-            np = 0;
-          }
-          if (nn < 0) {
-            np += nn;
-            nn = 0;
-          }
-          if (np > sum) {
-            np = sum;
-            nn = 0;
-          }
-          if (nn > sum) {
-            nn = sum;
-            np = 0;
-          }
+          if (np < 0) { nn += np; np = 0; }
+          if (nn < 0) { np += nn; nn = 0; }
+          if (np > sum) { np = sum; nn = 0; }
+          if (nn > sum) { nn = sum; np = 0; }
           applyFn(np, nn);
         };
         var onUp = function() {
@@ -2602,9 +2610,7 @@
           document.removeEventListener("mouseup", onUp);
           document.body.style.userSelect = "";
           document.body.style.cursor = "";
-          iframes.forEach(function(f) {
-            f.style.pointerEvents = "";
-          });
+          iframes.forEach(function(f) { f.style.pointerEvents = ""; });
           handle.classList.remove("dragging");
           refreshAllEditors();
         };
@@ -2622,16 +2628,16 @@
       hosts.forEach(function(pair) {
         const host = document.getElementById(pair[0]);
         if (!host || !editors[pair[1]] || !window.ResizeObserver) return;
-        const ro = new ResizeObserver(function() {
-          editors[pair[1]].refresh();
-        });
+        const ro = new ResizeObserver(function() { editors[pair[1]].refresh(); });
         ro.observe(host);
       });
     }
+    
     /* ---------- Keyboard: Escape closes modal ---------- */
     document.addEventListener("keydown", function(e) {
       if (e.key === "Escape" && activeGame) closePlayer();
     });
+    
     /* ---------- Responsive nav labels ---------- */
     function updateNavLabels() {
       const narrow = window.innerWidth < 640;
@@ -2643,33 +2649,29 @@
         el.style.display = window.innerWidth < 768 ? "none" : "inline";
       });
     }
-    /* ---------- Apply site config (name / logo / tagline / favicon) ---------- */
+    
+    /* ---------- Apply site config ---------- */
     var FALLBACK_LOGO_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z"/></svg>';
     var FALLBACK_FOOTER_SVG = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z"/></svg>';
 
     function applySiteConfig() {
-      // Browser tab title + meta description
-      document.title = SITE.name + (SITE.titleSuffix || "");
+      setTitle("");
       const metaDesc = document.querySelector('meta[name="description"]');
       if (metaDesc) metaDesc.setAttribute("content", SITE.tagline);
       
-      // Set Favicon for browser tab
       let faviconLink = document.querySelector("link[rel='icon']");
       if (!faviconLink) {
         faviconLink = document.createElement('link');
         faviconLink.rel = 'icon';
         document.head.appendChild(faviconLink);
       }
-      if (SITE.favicon && SITE.favicon.trim() !== "") {
-        faviconLink.href = SITE.favicon;
-      }
+      if (SITE.favicon && SITE.favicon.trim() !== "") faviconLink.href = SITE.favicon;
       
-      // Header logo button label + name text
       const logoBtn = document.getElementById("logo-btn");
       if (logoBtn) logoBtn.setAttribute("aria-label", SITE.name + " home");
       const logoText = document.getElementById("logo-text");
       if (logoText) logoText.textContent = SITE.name;
-      // Header logo badge: image if logo URL set, else fallback icon
+      
       const logoBadge = document.getElementById("logo-badge");
       if (logoBadge) {
         if (SITE.logo && SITE.logo.trim() !== "") {
@@ -2678,14 +2680,14 @@
           logoBadge.innerHTML = FALLBACK_LOGO_SVG;
         }
       }
-      // Footer name + tagline + copyright name
+      
       const fName = document.getElementById("footer-name");
       if (fName) fName.textContent = SITE.name;
       const fTag = document.getElementById("footer-tagline");
       if (fTag) fTag.textContent = SITE.tagline;
       const fCopy = document.getElementById("footer-copy-name");
       if (fCopy) fCopy.textContent = SITE.name;
-      // Footer badge: image if logo URL set, else fallback icon
+      
       const fBadge = document.getElementById("footer-badge");
       if (fBadge) {
         if (SITE.logo && SITE.logo.trim() !== "") {
@@ -2695,6 +2697,7 @@
         }
       }
     }
+    
     /* ---------- Init ---------- */
     function init() {
       document.getElementById("year").textContent = new Date().getFullYear();
@@ -2703,7 +2706,7 @@
       favorites = loadFavorites();
       recent = loadRecent();
       updateFavCount();
-      setView("games");
+      handleRoute(); // Initial route check
       updateNavLabels();
       window.addEventListener("resize", updateNavLabels);
     }
