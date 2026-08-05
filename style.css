@@ -155,9 +155,9 @@ input, textarea { font-family: inherit }
 .editor-header { display: flex; align-items: center; gap: .5rem; border-bottom: 1px solid var(--border); padding: .375rem .75rem; background: var(--muted) }
 .editor-dot { width: .5rem; height: .5rem; border-radius: 99px; flex-shrink: 0 }
 .editor-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-foreground) }
-.editor-host { position: relative; flex: 1; overflow: hidden; min-height: 0; min-width: 0; background: var(--cm-bg, #fff) }
-.editor-host .CodeMirror { position: absolute; inset: 0; height: 100%; font-family: ui-monospace, "SF Mono", Monaco, monospace; font-size: 13px; line-height: 1.6 }
-.editor-host>textarea { display: none }
+.editor-host { position: relative; flex: 1; overflow: hidden; min-height: 0; min-width: 0; background: #282a36; }
+.editor-host .CodeMirror { position: absolute; inset: 0; height: 100% !important; font-family: ui-monospace, "SF Mono", Monaco, monospace; font-size: 13px; line-height: 1.6; }
+.editor-host > textarea { display: none !important; }
 .splitter { flex: 0 0 6px; background: var(--border); position: relative; z-index: 6; transition: background .12s }
 .splitter.col { cursor: col-resize } .splitter.row { cursor: row-resize }
 .splitter::before { content: ""; position: absolute; inset: -4px }
