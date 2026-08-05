@@ -12,13 +12,6 @@ const DEFAULT_CODE = {
   js: 'const btn = document.getElementById(\'btn\');\nlet count = 0;\n\nbtn.addEventListener(\'click\', () => {\n  count++;\n  btn.textContent = \'Clicked \' + count + \' times\';\n});\n'
 };
 
-// Fix for relative paths breaking on subpages
-function resolvePath(path) {
-  if (!path) return path;
-  if (path.startsWith('http') || path.startsWith('/') || path.startsWith('data:')) return path;
-  return '/' + path;
-}
-
 function getCookie(name) { const m = document.cookie.split("; ").find(r => r.startsWith(name + "=")); return m ? decodeURIComponent(m.split("=").slice(1).join("=")) : null; }
 function setCookie(name, value, maxAgeDays) { document.cookie = name + "=" + encodeURIComponent(value) + "; max-age=" + (maxAgeDays * 86400) + "; path=/; SameSite=Lax"; }
 
@@ -76,7 +69,7 @@ function renderCard(item, type) {
   const playPath = type === 'app' ? `game?type=app&id=${item.id}` : `game?id=${item.id}`;
   return `<div class="game-card">
     <button class="card-thumb" onclick="navigate('${playPath}')" aria-label="Play ${escapeHtml(item.name)}">
-      <img src="${resolvePath(item.thumbnail)}" alt="${escapeHtml(item.name)} thumbnail" loading="lazy" onerror="this.style.display='none'; this.parentNode.classList.add('img-failed')">
+      <img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.name)} thumbnail" loading="lazy" onerror="this.style.display='none'; this.parentNode.classList.add('img-failed')">
       ${item.genre ? `<span class="card-genre">${escapeHtml(item.genre)}</span>` : ''}
       <div class="card-play"><span>Open</span></div>
     </button>
@@ -114,7 +107,6 @@ function updateThemeIcon(theme) {
   if (theme === "dark") {
     icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
   } else {
-    // Fix: Added fill="currentColor" so the moon icon is visible
     icon.innerHTML = '<path fill="currentColor" stroke="none" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
   }
 }
@@ -128,7 +120,7 @@ function applySiteConfig() {
   if (metaDesc) metaDesc.setAttribute("content", SITE.tagline);
   let f = document.querySelector("link[rel='icon']");
   if (!f) { f = document.createElement('link'); f.rel = 'icon'; document.head.appendChild(f); }
-  if (SITE.favicon && SITE.favicon.trim() !== "") f.href = resolvePath(SITE.favicon);
+  if (SITE.favicon && SITE.favicon.trim() !== "") f.href = SITE.favicon;
   
   const logoBtn = document.getElementById("logo-btn");
   if (logoBtn) logoBtn.setAttribute("aria-label", SITE.name + " home");
@@ -136,7 +128,7 @@ function applySiteConfig() {
   if (logoText) logoText.textContent = SITE.name;
   const logoBadge = document.getElementById("logo-badge");
   if (logoBadge) {
-    if (SITE.logo && SITE.logo.trim() !== "") logoBadge.innerHTML = `<img src="${resolvePath(SITE.logo)}" alt="${escapeHtml(SITE.name)} logo" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.innerHTML=window.FALLBACK_LOGO_SVG">`;
+    if (SITE.logo && SITE.logo.trim() !== "") logoBadge.innerHTML = `<img src="${escapeHtml(SITE.logo)}" alt="${escapeHtml(SITE.name)} logo" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.innerHTML=window.FALLBACK_LOGO_SVG">`;
     else logoBadge.innerHTML = FALLBACK_LOGO_SVG;
   }
   
@@ -148,13 +140,15 @@ function applySiteConfig() {
   if (fCopy) fCopy.textContent = SITE.name;
   const fBadge = document.getElementById("footer-badge");
   if (fBadge) {
-    if (SITE.logo && SITE.logo.trim() !== "") fBadge.innerHTML = `<img src="${resolvePath(SITE.logo)}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.innerHTML=window.FALLBACK_FOOTER_SVG">`;
+    if (SITE.logo && SITE.logo.trim() !== "") fBadge.innerHTML = `<img src="${escapeHtml(SITE.logo)}" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.innerHTML=window.FALLBACK_FOOTER_SVG">`;
     else fBadge.innerHTML = FALLBACK_FOOTER_SVG;
   }
 }
 
 function initBase(pathname) {
-  document.getElementById("year").textContent = new Date().getFullYear();
+  const yearEl = document.getElementById("year");
+  if (yearEl) yearEl.textContent = new Date().getFullYear();
+  
   applySiteConfig();
   loadTheme();
   const saved = localStorage.getItem(THEME_KEY);
