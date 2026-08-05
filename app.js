@@ -58,7 +58,8 @@ function renderHeader(pathname) {
   document.querySelectorAll(".nav-btn").forEach(b => {
     const route = b.dataset.route;
     let isActive = false;
-    if (route === 'index.html' && (pathname === 'index.html' || pathname === '/' || pathname === '')) isActive = true;
+    // Clean URLs without .html
+    if (route === './' && (pathname === './' || pathname === '/' || pathname === '' || pathname === 'index.html')) isActive = true;
     else if (route === pathname) isActive = true;
     b.classList.toggle("active", isActive);
   });
@@ -66,10 +67,10 @@ function renderHeader(pathname) {
 
 function renderCard(item, type) {
   const fav = isFavorite(item.id);
-  const playPath = type === 'app' ? `game.html?type=app&id=${item.id}` : `game.html?id=${item.id}`;
+  const playPath = type === 'app' ? `game?type=app&id=${item.id}` : `game?id=${item.id}`;
   return `<div class="game-card">
     <button class="card-thumb" onclick="navigate('${playPath}')" aria-label="Play ${escapeHtml(item.name)}">
-      <img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.name)} thumbnail" loading="lazy">
+      <img src="${escapeHtml(item.thumbnail)}" alt="${escapeHtml(item.name)} thumbnail" loading="lazy" onerror="this.style.display='none'">
       ${item.genre ? `<span class="card-genre">${escapeHtml(item.genre)}</span>` : ''}
       <div class="card-play"><span>Open</span></div>
     </button>
