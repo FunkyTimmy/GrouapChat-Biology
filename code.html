@@ -13,7 +13,7 @@
       <button class="nav-btn active" data-route="code" onclick="navigate('code')"><span>Code</span></button>
     </nav>
     <div class="spacer-flex"></div>
-    <button class="icon-btn" onclick="toggleTheme()"><svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle></svg></button>
+    <button class="icon-btn" onclick="toggleTheme()"><svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg></button>
   </div></header>
 
   <main class="main">
@@ -70,69 +70,86 @@
   </main>
 
   <script src="config.js"></script><script src="app.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
   <script>
-    let codeInited = false; let previewTimer = null; let editors = { html: null, css: null, js: null };
-    let editorSizes = [33.33, 33.33, 33.34]; let mainSizes = [60, 40]; let cmLoaded = false; let codeLayout = "vertical";
-    const CM_VER = "5.65.16"; const CM_BASE = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/" + CM_VER;
-    const BEAUTIFY_VER = "1.15.1"; const BEAUTIFY_BASE = "https://cdnjs.cloudflare.com/ajax/libs/js-beautify/" + BEAUTIFY_VER;
-
-    function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.async = true; s.onload = () => res(); s.onerror = () => rej(new Error("Failed to load " + src)); document.head.appendChild(s); }); }
-    function loadStyle(href) { return new Promise((res, rej) => { const l = document.createElement("link"); l.rel = "stylesheet"; l.href = href; l.onload = () => res(); l.onerror = () => rej(new Error("Failed to load " + href)); document.head.appendChild(l); }); }
+    let editors = { html: null, css: null, js: null };
+    let editorSizes = [33.33, 33.33, 33.34]; let mainSizes = [60, 40]; let codeLayout = "vertical";
     
-    async function loadCodeEditorLibs() {
-      if (cmLoaded) return;
-      await Promise.all([ loadStyle(CM_BASE + "/codemirror.min.css"), loadStyle(CM_BASE + "/theme/dracula.min.css"), loadStyle(CM_BASE + "/theme/eclipse.min.css") ]);
-      await loadScript(CM_BASE + "/codemirror.min.js");
-      await Promise.all([
-        loadScript(CM_BASE + "/mode/xml/xml.min.js"), loadScript(CM_BASE + "/mode/css/css.min.js"), loadScript(CM_BASE + "/mode/javascript/javascript.min.js"),
-        loadScript(CM_BASE + "/mode/htmlmixed/htmlmixed.min.js"), loadScript(CM_BASE + "/addon/edit/closebrackets.min.js"), loadScript(CM_BASE + "/addon/edit/closetag.min.js"),
-        loadScript(CM_BASE + "/addon/edit/matchbrackets.min.js"), loadScript(CM_BASE + "/addon/selection/active-line.min.js"), loadScript(CM_BASE + "/addon/display/placeholder.min.js"),
-      ]);
-      await Promise.all([ loadScript(BEAUTIFY_BASE + "/beautify.min.js"), loadScript(BEAUTIFY_BASE + "/beautify-css.min.js"), loadScript(BEAUTIFY_BASE + "/beautify-html.min.js") ]);
-      cmLoaded = true;
+    function initCodeEditor() {
+      if (typeof CodeMirror === 'undefined') {
+        setTimeout(initCodeEditor, 50); // Wait for CodeMirror to load
+        return;
+      }
+      editors.html = CodeMirror.fromTextArea(document.getElementById('editor-html'), { mode: "htmlmixed", lineNumbers: true });
+      editors.css = CodeMirror.fromTextArea(document.getElementById('editor-css'), { mode: "css", lineNumbers: true });
+      editors.js = CodeMirror.fromTextArea(document.getElementById('editor-js'), { mode: "javascript", lineNumbers: true });
+      
+      try {
+        const saved = localStorage.getItem(CODE_KEY);
+        if (saved) {
+          const p = JSON.parse(saved);
+          if (p) {
+            editors.html.setValue(p.html || "");
+            editors.css.setValue(p.css || "");
+            editors.js.setValue(p.js || "");
+          }
+        }
+      } catch {}
+      
+      const onChange = () => {
+        const state = { html: editors.html.getValue(), css: editors.css.getValue(), js: editors.js.getValue() };
+        localStorage.setItem(CODE_KEY, JSON.stringify(state));
+        updatePreview();
+      };
+      editors.html.on("change", onChange);
+      editors.css.on("change", onChange);
+      editors.js.on("change", onChange);
+      applyEditorSizes(); applyMainSizes(); setupSplitters(); updatePreview();
     }
-    function cmTheme() { return document.documentElement.getAttribute("data-theme") === "dark" ? "dracula" : "eclipse"; }
-    function makeEditor(textareaId, mode, placeholder) {
-      const ta = document.getElementById(textareaId);
-      return CodeMirror.fromTextArea(ta, {
-        mode: mode, theme: cmTheme(), lineNumbers: true, lineWrapping: false, indentUnit: 2, tabSize: 2, indentWithTabs: false, smartIndent: true, electricChars: true,
-        autoCloseBrackets: { pairs: '()[]{}\'\'""``', triples: "", explode: "[]{}" }, autoCloseTags: true, matchBrackets: true, styleActiveLine: true, placeholder: placeholder,
-        extraKeys: { "Tab": function(cm) { cm.replaceSelection("  ", "end"); }, "Ctrl-Enter": function() { updatePreview(); }, "Cmd-Enter": function() { updatePreview(); }, "Ctrl-S": function() { saveCodeState(); }, "Cmd-S": function() { saveCodeState(); } },
-      });
+    function updatePreview() {
+      const html = editors.html.getValue();
+      const css = editors.css.getValue();
+      const js = editors.js.getValue();
+      const doc = `<!DOCTYPE html><html><head><style>${css}</style></head><body>${html}<script>try{${js}}catch(e){console.error(e)}<\/script></body></html>`;
+      document.getElementById('preview-frame').srcdoc = doc;
     }
-    async function initCodeEditor() {
-      if (codeInited) { refreshAllEditors(); return; }
-      codeInited = true;
-      try { await loadCodeEditorLibs(); } catch (e) { document.getElementById("code-body").innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:var(--muted-foreground);padding:2rem;text-align:center">Could not load the code editor libraries.</div>'; codeInited = false; return; }
-      try { const saved = localStorage.getItem(CODE_KEY); if (saved) { const p = JSON.parse(saved); if (p) { codeState.html = p.html || ""; codeState.css = p.css || ""; codeState.js = p.js || ""; } } } catch {}
-      editors.html = makeEditor("editor-html", "htmlmixed", "<!-- Write HTML here -->");
-      editors.css = makeEditor("editor-css", "css", "/* Write CSS here */");
-      editors.js = makeEditor("editor-js", "javascript", "// Write JavaScript here");
-      editors.html.setValue(codeState.html); editors.css.setValue(codeState.css); editors.js.setValue(codeState.js);
-      const onChange = function() { codeState.html = editors.html.getValue(); codeState.css = editors.css.getValue(); codeState.js = editors.js.getValue(); clearTimeout(previewTimer); previewTimer = setTimeout(updatePreview, 300); saveCodeState(); };
-      editors.html.on("change", onChange); editors.css.on("change", onChange); editors.js.on("change", onChange);
-      applyEditorSizes(); applyMainSizes(); setupSplitters(); setupEditorResizeObservers(); updatePreview();
-      document.addEventListener("fullscreenchange", function() {
-        const icon = document.getElementById("fs-icon");
-        if (document.fullscreenElement) icon.innerHTML = '<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>';
-        else icon.innerHTML = '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>';
-        refreshAllEditors();
-      });
-      setTimeout(refreshAllEditors, 60);
-    }
-    function refreshAllEditors() { if (!editors || !editors.html) return; editors.html.refresh(); editors.css.refresh(); editors.js.refresh(); }
-    function saveCodeState() { try { localStorage.setItem(CODE_KEY, JSON.stringify(codeState)); } catch {} }
-    function buildPreviewDoc() { return "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<style>\n" + codeState.css + "\n</style>\n</head>\n<body>\n" + codeState.html + "\n<script>\ntry {\n" + codeState.js + "\n} catch (e) {\n  console.error(e);\n  document.body.insertAdjacentHTML('beforeend', '<pre style=\"position:fixed;bottom:0;left:0;right:0;margin:0;padding:8px 12px;background:#1a0a0a;color:#ff6b6b;font:12px/1.5 monospace;white-space:pre-wrap;border-top:1px solid #ff6b6b33;z-index:9999;\">' + String(e && e.stack || e) + '<\\/pre>');\n}\n<\/script>\n</body>\n</html>"; }
-    function updatePreview() { const frame = document.getElementById("preview-frame"); if (frame) frame.srcdoc = buildPreviewDoc(); }
     function codeRun() { updatePreview(); }
-    function codeReset() { codeState = { html: "", css: "", js: "" }; if (editors.html) { editors.html.setValue(""); editors.css.setValue(""); editors.js.setValue(""); } updatePreview(); saveCodeState(); }
-    function codeBeautify() {
-      if (!editors.html) return;
-      try { if (window.html_beautify) { const v = html_beautify(editors.html.getValue(), { indent_size: 2, wrap_line_length: 0, end_with_newline: false }); editors.html.setValue(v); codeState.html = v; } if (window.css_beautify) { const v = css_beautify(editors.css.getValue(), { indent_size: 2 }); editors.css.setValue(v); codeState.css = v; } if (window.js_beautify) { const v = js_beautify(editors.js.getValue(), { indent_size: 2 }); editors.js.setValue(v); codeState.js = v; } updatePreview(); saveCodeState(); } catch (e) { console.error("Beautify failed", e); }
+    function codeReset() {
+      editors.html.setValue(""); editors.css.setValue(""); editors.js.setValue("");
+      updatePreview();
     }
-    function codeNewTab() { const blob = new Blob([buildPreviewDoc()], { type: "text/html" }); const url = URL.createObjectURL(blob); window.open(url, "_blank", "noopener,noreferrer"); setTimeout(() => URL.revokeObjectURL(url), 10000); }
-    function codeToggleLayout() { codeLayout = codeLayout === "vertical" ? "horizontal" : "vertical"; const editorsEl = document.getElementById("code-editors"); editorsEl.classList.toggle("vertical", codeLayout === "vertical"); editorsEl.classList.toggle("horizontal", codeLayout === "horizontal"); document.querySelectorAll("[data-split]").forEach(function(h) { h.classList.toggle("row", codeLayout === "vertical"); h.classList.toggle("col", codeLayout === "horizontal"); }); setTimeout(refreshAllEditors, 60); }
-    function codeToggleFullscreen() { const el = document.getElementById("code-container"); if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen(); }
+    function codeBeautify() {
+      // Optional: requires js-beautify library
+      console.log("Beautify clicked");
+    }
+    function codeNewTab() {
+      const html = editors.html.getValue();
+      const css = editors.css.getValue();
+      const js = editors.js.getValue();
+      const doc = `<!DOCTYPE html><html><head><style>${css}</style></head><body>${html}<script>try{${js}}catch(e){console.error(e)}<\/script></body></html>`;
+      const newWin = window.open('about:blank', '_blank');
+      if (newWin) {
+        newWin.document.write(doc);
+        newWin.document.close();
+      }
+    }
+    function codeToggleLayout() {
+      codeLayout = codeLayout === "vertical" ? "horizontal" : "vertical";
+      const editorsEl = document.getElementById("code-editors");
+      editorsEl.classList.toggle("vertical", codeLayout === "vertical");
+      editorsEl.classList.toggle("horizontal", codeLayout === "horizontal");
+      document.querySelectorAll("[data-split]").forEach(function(h) { h.classList.toggle("row", codeLayout === "vertical"); h.classList.toggle("col", codeLayout === "horizontal"); });
+    }
+    function codeToggleFullscreen() {
+      const el = document.getElementById("code-container");
+      if (document.fullscreenElement) document.exitFullscreen();
+      else el.requestFullscreen();
+    }
     function applyEditorSizes() { const ids = ["panel-html", "panel-css", "panel-js"]; ids.forEach(function(id, i) { const el = document.getElementById(id); if (el) el.style.flex = "0 0 " + editorSizes[i] + "%"; }); }
     function applyMainSizes() { const e = document.getElementById("code-editors"); const p = document.getElementById("preview-panel"); if (e) e.style.flex = "0 0 " + mainSizes[0] + "%"; if (p) p.style.flex = "0 0 " + mainSizes[1] + "%"; }
     function setupSplitters() {
@@ -155,13 +172,9 @@
           if (np < 0) { nn += np; np = 0; } if (nn < 0) { np += nn; nn = 0; } if (np > sum) { np = sum; nn = 0; } if (nn > sum) { nn = sum; np = 0; }
           applyFn(np, nn);
         };
-        var onUp = function() { document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); document.body.style.userSelect = ""; document.body.style.cursor = ""; iframes.forEach(function(f) { f.style.pointerEvents = ""; }); handle.classList.remove("dragging"); refreshAllEditors(); };
+        var onUp = function() { document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); document.body.style.userSelect = ""; document.body.style.cursor = ""; iframes.forEach(function(f) { f.style.pointerEvents = ""; }); handle.classList.remove("dragging"); };
         document.addEventListener("mousemove", onMove); document.addEventListener("mouseup", onUp);
       });
-    }
-    function setupEditorResizeObservers() {
-      const hosts = [["host-html", "html"], ["host-css", "css"], ["host-js", "js"]];
-      hosts.forEach(function(pair) { const host = document.getElementById(pair[0]); if (!host || !editors[pair[1]] || !window.ResizeObserver) return; const ro = new ResizeObserver(function() { editors[pair[1]].refresh(); }); ro.observe(host); });
     }
     
     initBase('code');
