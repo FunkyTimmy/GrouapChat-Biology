@@ -25,7 +25,7 @@
     const type = params.get('type') || 'game';
     activeGame = type === 'app' ? APPS.find(a => a.id === id) : GAMES.find(g => g.id === id);
 
-    if (!activeGame) window.location.href = "404.html";
+    if (!activeGame) window.location.href = "404";
     else {
       document.getElementById("p-title").textContent = activeGame.name;
       setTitle(activeGame.name);
@@ -61,7 +61,7 @@
       if (document.fullscreenElement) document.exitFullscreen();
       else document.documentElement.requestFullscreen();
     }
-    initBase('game.html');
+    initBase('game');
     updateFavBtn();
   </script>
 </body>
