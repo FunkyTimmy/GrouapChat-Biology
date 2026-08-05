@@ -2,10 +2,8 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Code Editor</title>
   <link rel="stylesheet" href="style.css">
-  <!-- CodeMirror Core & Dracula Theme -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
-  <!-- Hint Dropdown CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
 </head>
 <body>
@@ -104,15 +102,11 @@
 
   <script src="config.js"></script>
   <script src="app.js"></script>
-  
-  <!-- CodeMirror Core & Modes -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
-  
-  <!-- CodeMirror Addons (Auto-complete & UI) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
@@ -121,8 +115,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/html-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/css-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/javascript-hint.min.js"></script>
-  
-  <!-- JS Beautify for formatting code -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-css.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-html.min.js"></script>
@@ -133,14 +125,27 @@
     let mainSizes = [60, 40]; 
     let codeLayout = "vertical";
     
-    // Wait for ALL scripts to load before initializing CodeMirror
+    // VS Code-like Auto-complete Trigger
+    function triggerAutoComplete(cm, change) {
+      if (!cm.state.completionActive && change.origin === "+input") {
+        const c = change.text[0];
+        // Trigger on alphanumeric, <, ., /, !, etc. (like VS Code)
+        if (c.match(/[a-zA-Z0-9<.\/\!\[\(:]/)) {
+          const cursor = cm.getCursor();
+          const token = cm.getTokenAt(cursor);
+          // Don't trigger inside strings or comments for JS/CSS
+          if (token.type && (token.type.includes("string") || token.type.includes("comment"))) return;
+          CodeMirror.commands.autocomplete(cm, null, { completeSingle: false });
+        }
+      }
+    }
+    
     window.addEventListener('load', function() {
       if (typeof CodeMirror === 'undefined') {
         console.error("CodeMirror failed to load");
         return;
       }
       
-      // Shared options for all editors
       const commonOpts = {
         theme: "dracula",
         lineNumbers: true,
@@ -164,7 +169,10 @@
       editors.css = CodeMirror.fromTextArea(document.getElementById('editor-css'), { ...commonOpts, mode: "css" });
       editors.js = CodeMirror.fromTextArea(document.getElementById('editor-js'), { ...commonOpts, mode: "javascript" });
       
-      // Load saved code from localStorage
+      editors.html.on("inputRead", triggerAutoComplete);
+      editors.css.on("inputRead", triggerAutoComplete);
+      editors.js.on("inputRead", triggerAutoComplete);
+      
       try {
         const saved = localStorage.getItem(CODE_KEY);
         if (saved) {
@@ -175,7 +183,6 @@
             editors.js.setValue(p.js || "");
           }
         } else {
-          // Load default boilerplate if no save exists
           editors.html.setValue(DEFAULT_CODE.html);
           editors.css.setValue(DEFAULT_CODE.css);
           editors.js.setValue(DEFAULT_CODE.js);
@@ -195,7 +202,6 @@
       setupSplitters(); 
       updatePreview();
       
-      // Refresh to ensure they render correctly
       setTimeout(() => {
         editors.html.refresh();
         editors.css.refresh();
@@ -217,31 +223,23 @@
       const doc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>${css}</style></head><body>${html}<script>try{${js}}catch(e){console.error(e)}<\/script></body></html>`;
       document.getElementById('preview-frame').srcdoc = doc;
     }
-    
     function codeRun() { updatePreview(); }
-    
     function codeReset() {
       if (!editors.html) return;
-      editors.html.setValue("");
-      editors.css.setValue("");
-      editors.js.setValue("");
-      saveCodeState();
-      updatePreview();
+      editors.html.setValue(""); editors.css.setValue(""); editors.js.setValue("");
+      saveCodeState(); updatePreview();
     }
-    
     function codeBeautify() {
       if (!editors.html) return;
       if (typeof html_beautify !== 'undefined') {
         editors.html.setValue(html_beautify(editors.html.getValue(), { indent_size: 2, wrap_line_length: 0 }));
         editors.css.setValue(css_beautify(editors.css.getValue(), { indent_size: 2 }));
         editors.js.setValue(js_beautify(editors.js.getValue(), { indent_size: 2 }));
-        saveCodeState();
-        updatePreview();
+        saveCodeState(); updatePreview();
       } else {
         alert("Beautify library failed to load.");
       }
     }
-    
     function codeNewTab() {
       if (!editors.html) return;
       const html = editors.html.getValue();
@@ -249,12 +247,8 @@
       const js = editors.js.getValue();
       const doc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>${css}</style></head><body>${html}<script>try{${js}}catch(e){console.error(e)}<\/script></body></html>`;
       const newWin = window.open('about:blank', '_blank');
-      if (newWin) {
-        newWin.document.write(doc);
-        newWin.document.close();
-      }
+      if (newWin) { newWin.document.write(doc); newWin.document.close(); }
     }
-    
     function codeToggleLayout() {
       codeLayout = codeLayout === "vertical" ? "horizontal" : "vertical";
       const editorsEl = document.getElementById("code-editors");
@@ -264,19 +258,13 @@
         h.classList.toggle("row", codeLayout === "vertical"); 
         h.classList.toggle("col", codeLayout === "horizontal"); 
       });
-      if (editors.html) { 
-        editors.html.refresh(); 
-        editors.css.refresh(); 
-        editors.js.refresh(); 
-      }
+      if (editors.html) { editors.html.refresh(); editors.css.refresh(); editors.js.refresh(); }
     }
-    
     function codeToggleFullscreen() {
       const el = document.getElementById("code-container");
       if (document.fullscreenElement) document.exitFullscreen();
       else el.requestFullscreen();
     }
-    
     function applyEditorSizes() { 
       const ids = ["panel-html", "panel-css", "panel-js"]; 
       ids.forEach(function(id, i) { 
@@ -284,14 +272,12 @@
         if (el) el.style.flex = "0 0 " + editorSizes[i] + "%"; 
       }); 
     }
-    
     function applyMainSizes() { 
       const e = document.getElementById("code-editors"); 
       const p = document.getElementById("preview-panel"); 
       if (e) e.style.flex = "0 0 " + mainSizes[0] + "%"; 
       if (p) p.style.flex = "0 0 " + mainSizes[1] + "%"; 
     }
-    
     function setupSplitters() {
       document.querySelectorAll("[data-split]").forEach(function(handle) {
         const index = parseInt(handle.getAttribute("data-split"), 10);
@@ -299,7 +285,6 @@
       });
       makeSplitter(document.getElementById("split-main"), function() { return "x"; }, function() { return { prev: mainSizes[0], next: mainSizes[1], container: document.getElementById("code-body") }; }, function(np, nn) { mainSizes[0] = np; mainSizes[1] = nn; applyMainSizes(); });
     }
-    
     function makeSplitter(handle, axisFn, stateFn, applyFn) {
       handle.addEventListener("mousedown", function(e) {
         e.preventDefault(); const axis = axisFn(); const state = stateFn(); const rect = state.container.getBoundingClientRect();
@@ -321,11 +306,9 @@
           iframes.forEach(function(f) { f.style.pointerEvents = ""; }); 
           handle.classList.remove("dragging"); 
         };
-        document.addEventListener("mousemove", onMove); 
-        document.addEventListener("mouseup", onUp);
+        document.addEventListener("mousemove", onMove); document.addEventListener("mouseup", onUp);
       });
     }
-    
     initBase('code');
   </script>
 </body>
