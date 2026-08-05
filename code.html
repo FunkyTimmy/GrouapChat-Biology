@@ -119,16 +119,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+  
+  <!-- Hint Addons (Crucial: xml-hint is required for html-hint) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/xml-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/html-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/css-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/javascript-hint.min.js"></script>
+  
+  <!-- Linting Addons & Engines -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/javascript-lint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/css-lint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/html-lint.min.js"></script>
-  
-  <!-- Linting Engines -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.6/jshint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/csslint/1.0.5/csslint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/htmlhint/0.11.0/htmlhint.min.js"></script>
@@ -139,6 +142,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-html.min.js"></script>
 
   <script>
+    // Initialize base UI immediately so icons load instantly
+    initBase('code');
+
     let editors = { html: null, css: null, js: null };
     let editorSizes = [33.33, 33.33, 33.34]; 
     let mainSizes = [60, 40]; 
@@ -154,8 +160,8 @@
           const token = cm.getTokenAt(cursor);
           // Don't trigger inside strings or comments for JS/CSS
           if (token.type && (token.type.includes("string") || token.type.includes("comment"))) return;
-          // Explicitly call showHint with completeSingle: false so it doesn't auto-insert
-          cm.showHint({ hint: CodeMirror.hint.auto, completeSingle: false });
+          // Explicitly call autocomplete
+          CodeMirror.commands.autocomplete(cm, null, { completeSingle: false });
         }
       }
     }
@@ -331,7 +337,6 @@
         document.addEventListener("mousemove", onMove); document.addEventListener("mouseup", onUp);
       });
     }
-    initBase('code');
   </script>
 </body>
 </html>
