@@ -14,7 +14,7 @@ const GAMES = [
     name: "Cookie Clicker",
     description: "Click the cookie to get more cookies and the cycle repeats. Keep upgrading your cursors and farms to build an empire of baked goods.",
     genre: "Arcade",
-    thumbnail: "https://cdn.jsdelivr.net/gh/FunkyTimmy/little-timmy-codepen@main/EscapeRoad.png", // Placeholder if image missing
+    thumbnail: "https://cdn.jsdelivr.net/gh/FunkyTimmy/little-timmy-codepen@main/EscapeRoad.png", 
     fileUrl: "games/cookieclicker.html",
     popular: false,
   },
@@ -23,7 +23,7 @@ const GAMES = [
     name: "Minecraft 1.12.2",
     description: "Eaglercraft 1.12.2. As similar to Minecraft 1.12.2 as possible. Join xenaMC on multiplayer!",
     genre: "Arcade",
-    thumbnail: "https://cdn.jsdelivr.net/gh/FunkyTimmy/little-timmy-codepen@main/EscapeRoad.png", // Placeholder
+    thumbnail: "https://cdn.jsdelivr.net/gh/FunkyTimmy/little-timmy-codepen@main/EscapeRoad.png", 
     fileUrl: "games/minecraft1-12-2.html",
     popular: true,
   },
@@ -41,18 +41,18 @@ const GAMES = [
     name: "Geometry Dash Lite",
     description: "Jump over obstacles while continuously moving to the beat.",
     genre: "Arcade",
-    thumbnail: "https://cdn.jsdelivr.net/gh/FunkyTimmy/little-timmy-codepen@main/EscapeRoad.png", // Placeholder
+    thumbnail: "https://cdn.jsdelivr.net/gh/FunkyTimmy/little-timmy-codepen@main/EscapeRoad.png", 
     fileUrl: "games/gdlite.html",
     popular: false,
   }
 ];
 
 const APPS = [
-  // {
-  //   id: "desmos",
-  //   name: "Desmos Graphing",
-  //   description: "An online graphing calculator for math and science.",
-  //   thumbnail: "https://cdn.jsdelivr.net/gh/FunkyTimmy/little-timmy-codepen@main/desmos.png",
-  //   fileUrl: "apps/desmos.html"
-  // }
+  {
+    id: "desmos",
+    name: "Desmos Graphing",
+    description: "An online graphing calculator for math and science.",
+    thumbnail: "https://cdn.jsdelivr.net/gh/FunkyTimmy/little-timmy-codepen@main/desmos.png",
+    fileUrl: "apps/desmos.html"
+  }
 ];
