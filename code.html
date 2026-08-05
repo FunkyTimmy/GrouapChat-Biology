@@ -16,75 +16,156 @@
     <button class="icon-btn" onclick="toggleTheme()"><svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle></svg></button>
   </div></header>
 
-  <main class="main" style="height: calc(100vh - 4rem); padding: 1rem;">
-    <div style="display: flex; flex-direction: column; height: 100%; overflow: hidden; border-radius: .75rem; border: 1px solid var(--border); background: var(--card);">
-      <div style="display: flex; align-items: center; gap: .5rem; border-bottom: 1px solid var(--border); background: var(--muted); padding: .5rem .75rem;">
-        <span style="font-weight:600">Code Editor</span>
-        <div style="margin-left: auto; display: flex; gap: .5rem;">
-          <button class="btn btn-sm btn-ghost" onclick="codeRun()">Run</button>
-          <button class="btn btn-sm btn-ghost" onclick="codeReset()">Reset</button>
+  <main class="main">
+    <div id="view-code" class="code-wrap">
+      <div class="code-container" id="code-container">
+        <div class="code-toolbar">
+          <div class="code-toolbar-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            <span class="nav-label" style="display: inline;">Code Editor</span>
+          </div>
+          <div class="code-toolbar-actions">
+            <button class="btn btn-ghost btn-sm" onclick="codeBeautify()" title="Beautify (format HTML, CSS &amp; JS)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2"></path><path d="M15 16v-2"></path><path d="M8 9h2"></path><path d="M20 9h2"></path><path d="M17.8 11.8 19 13"></path><path d="M15 9h.01"></path><path d="M17.8 6.2 19 5"></path><path d="m3 21 9-9"></path><path d="M12.2 6.2 11 5"></path></svg>
+              <span class="nav-label" style="display: inline;">Beautify</span>
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="codeRun()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span class="nav-label" style="display: inline;">Run</span>
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="codeReset()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+              <span class="nav-label" style="display: inline;">Reset</span>
+            </button>
+            <button class="btn btn-ghost btn-sm" onclick="codeNewTab()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              <span class="nav-label nav-label-md" style="display: inline;">New tab</span>
+            </button>
+            <div class="code-divider"></div>
+            <button class="btn btn-ghost btn-sm" onclick="codeToggleLayout()" aria-label="Toggle layout">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+              <span class="nav-label nav-label-md" style="display: inline;">Layout</span>
+            </button>
+            <button class="btn btn-ghost btn-icon" onclick="codeToggleFullscreen()" id="fs-btn" aria-label="Toggle fullscreen">
+              <svg id="fs-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+            </button>
+          </div>
         </div>
-      </div>
-      <div style="flex: 1; overflow: hidden; display: flex; flex-direction: row;">
-        <div id="host-html" style="flex:1; overflow:hidden;"><textarea id="editor-html" spellcheck="false" style="width:100%;height:100%;border:0;"></textarea></div>
-        <div style="width:6px;background:var(--border);cursor:col-resize;"></div>
-        <div id="host-css" style="flex:1; overflow:hidden;"><textarea id="editor-css" spellcheck="false" style="width:100%;height:100%;border:0;"></textarea></div>
-        <div style="width:6px;background:var(--border);cursor:col-resize;"></div>
-        <div id="host-js" style="flex:1; overflow:hidden;"><textarea id="editor-js" spellcheck="false" style="width:100%;height:100%;border:0;"></textarea></div>
-        <div style="width:6px;background:var(--border);cursor:col-resize;"></div>
-        <iframe id="preview-frame" style="flex:1.5; border:0; background:#fff;" sandbox="allow-scripts allow-modals allow-forms allow-popups allow-same-origin"></iframe>
+        <div class="code-body" id="code-body">
+          <div class="code-editors vertical" id="code-editors">
+            <div class="editor-panel" id="panel-html"><div class="editor-header"><span class="editor-dot" style="background:#e34c26"></span><span class="editor-label">HTML</span></div><div class="editor-host" id="host-html"><textarea id="editor-html" spellcheck="false"></textarea></div></div>
+            <div class="splitter row" data-split="0"></div>
+            <div class="editor-panel" id="panel-css"><div class="editor-header"><span class="editor-dot" style="background:#06b6d4"></span><span class="editor-label">CSS</span></div><div class="editor-host" id="host-css"><textarea id="editor-css" spellcheck="false"></textarea></div></div>
+            <div class="splitter row" data-split="1"></div>
+            <div class="editor-panel" id="panel-js"><div class="editor-header"><span class="editor-dot" style="background:#eab308"></span><span class="editor-label">JS</span></div><div class="editor-host" id="host-js"><textarea id="editor-js" spellcheck="false"></textarea></div></div>
+          </div>
+          <div class="splitter col" id="split-main"></div>
+          <div class="preview-panel" id="preview-panel">
+            <div class="preview-bar"><div class="preview-dots"><span style="background:#f87171"></span><span style="background:#fbbf24"></span><span style="background:#34d399"></span></div><span class="preview-label">Preview</span></div>
+            <iframe class="preview-frame" id="preview-frame" title="Preview" sandbox="allow-scripts allow-modals allow-forms allow-popups allow-same-origin"></iframe>
+          </div>
+        </div>
       </div>
     </div>
   </main>
 
   <script src="config.js"></script><script src="app.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
   <script>
-    initBase('code.html');
-    let editors = {};
-    function initCode() {
-      editors.html = CodeMirror.fromTextArea(document.getElementById('editor-html'), { mode: "htmlmixed", lineNumbers: true });
-      editors.css = CodeMirror.fromTextArea(document.getElementById('editor-css'), { mode: "css", lineNumbers: true });
-      editors.js = CodeMirror.fromTextArea(document.getElementById('editor-js'), { mode: "javascript", lineNumbers: true });
-      
-      const saved = localStorage.getItem("arcade:code-editor");
-      if (saved) {
-        const p = JSON.parse(saved);
-        editors.html.setValue(p.html || "");
-        editors.css.setValue(p.css || "");
-        editors.js.setValue(p.js || "");
-      }
-      
-      const onChange = () => {
-        const state = { html: editors.html.getValue(), css: editors.css.getValue(), js: editors.js.getValue() };
-        localStorage.setItem("arcade:code-editor", JSON.stringify(state));
-        updatePreview();
-      };
-      editors.html.on("change", onChange);
-      editors.css.on("change", onChange);
-      editors.js.on("change", onChange);
-      updatePreview();
+    let codeInited = false; let previewTimer = null; let editors = { html: null, css: null, js: null };
+    let editorSizes = [33.33, 33.33, 33.34]; let mainSizes = [60, 40]; let cmLoaded = false; let codeLayout = "vertical";
+    const CM_VER = "5.65.16"; const CM_BASE = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/" + CM_VER;
+    const BEAUTIFY_VER = "1.15.1"; const BEAUTIFY_BASE = "https://cdnjs.cloudflare.com/ajax/libs/js-beautify/" + BEAUTIFY_VER;
+
+    function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.async = true; s.onload = () => res(); s.onerror = () => rej(new Error("Failed to load " + src)); document.head.appendChild(s); }); }
+    function loadStyle(href) { return new Promise((res, rej) => { const l = document.createElement("link"); l.rel = "stylesheet"; l.href = href; l.onload = () => res(); l.onerror = () => rej(new Error("Failed to load " + href)); document.head.appendChild(l); }); }
+    
+    async function loadCodeEditorLibs() {
+      if (cmLoaded) return;
+      await Promise.all([ loadStyle(CM_BASE + "/codemirror.min.css"), loadStyle(CM_BASE + "/theme/dracula.min.css"), loadStyle(CM_BASE + "/theme/eclipse.min.css") ]);
+      await loadScript(CM_BASE + "/codemirror.min.js");
+      await Promise.all([
+        loadScript(CM_BASE + "/mode/xml/xml.min.js"), loadScript(CM_BASE + "/mode/css/css.min.js"), loadScript(CM_BASE + "/mode/javascript/javascript.min.js"),
+        loadScript(CM_BASE + "/mode/htmlmixed/htmlmixed.min.js"), loadScript(CM_BASE + "/addon/edit/closebrackets.min.js"), loadScript(CM_BASE + "/addon/edit/closetag.min.js"),
+        loadScript(CM_BASE + "/addon/edit/matchbrackets.min.js"), loadScript(CM_BASE + "/addon/selection/active-line.min.js"), loadScript(CM_BASE + "/addon/display/placeholder.min.js"),
+      ]);
+      await Promise.all([ loadScript(BEAUTIFY_BASE + "/beautify.min.js"), loadScript(BEAUTIFY_BASE + "/beautify-css.min.js"), loadScript(BEAUTIFY_BASE + "/beautify-html.min.js") ]);
+      cmLoaded = true;
     }
-    function updatePreview() {
-      const html = editors.html.getValue();
-      const css = editors.css.getValue();
-      const js = editors.js.getValue();
-      const doc = `<!DOCTYPE html><html><head><style>${css}</style></head><body>${html}<script>try{${js}}catch(e){console.error(e)}<\/script></body></html>`;
-      document.getElementById('preview-frame').srcdoc = doc;
+    function cmTheme() { return document.documentElement.getAttribute("data-theme") === "dark" ? "dracula" : "eclipse"; }
+    function makeEditor(textareaId, mode, placeholder) {
+      const ta = document.getElementById(textareaId);
+      return CodeMirror.fromTextArea(ta, {
+        mode: mode, theme: cmTheme(), lineNumbers: true, lineWrapping: false, indentUnit: 2, tabSize: 2, indentWithTabs: false, smartIndent: true, electricChars: true,
+        autoCloseBrackets: { pairs: '()[]{}\'\'""``', triples: "", explode: "[]{}" }, autoCloseTags: true, matchBrackets: true, styleActiveLine: true, placeholder: placeholder,
+        extraKeys: { "Tab": function(cm) { cm.replaceSelection("  ", "end"); }, "Ctrl-Enter": function() { updatePreview(); }, "Cmd-Enter": function() { updatePreview(); }, "Ctrl-S": function() { saveCodeState(); }, "Cmd-S": function() { saveCodeState(); } },
+      });
     }
+    async function initCodeEditor() {
+      if (codeInited) { refreshAllEditors(); return; }
+      codeInited = true;
+      try { await loadCodeEditorLibs(); } catch (e) { document.getElementById("code-body").innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;color:var(--muted-foreground);padding:2rem;text-align:center">Could not load the code editor libraries.</div>'; codeInited = false; return; }
+      try { const saved = localStorage.getItem(CODE_KEY); if (saved) { const p = JSON.parse(saved); if (p) { codeState.html = p.html || ""; codeState.css = p.css || ""; codeState.js = p.js || ""; } } } catch {}
+      editors.html = makeEditor("editor-html", "htmlmixed", "<!-- Write HTML here -->");
+      editors.css = makeEditor("editor-css", "css", "/* Write CSS here */");
+      editors.js = makeEditor("editor-js", "javascript", "// Write JavaScript here");
+      editors.html.setValue(codeState.html); editors.css.setValue(codeState.css); editors.js.setValue(codeState.js);
+      const onChange = function() { codeState.html = editors.html.getValue(); codeState.css = editors.css.getValue(); codeState.js = editors.js.getValue(); clearTimeout(previewTimer); previewTimer = setTimeout(updatePreview, 300); saveCodeState(); };
+      editors.html.on("change", onChange); editors.css.on("change", onChange); editors.js.on("change", onChange);
+      applyEditorSizes(); applyMainSizes(); setupSplitters(); setupEditorResizeObservers(); updatePreview();
+      document.addEventListener("fullscreenchange", function() {
+        const icon = document.getElementById("fs-icon");
+        if (document.fullscreenElement) icon.innerHTML = '<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>';
+        else icon.innerHTML = '<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>';
+        refreshAllEditors();
+      });
+      setTimeout(refreshAllEditors, 60);
+    }
+    function refreshAllEditors() { if (!editors || !editors.html) return; editors.html.refresh(); editors.css.refresh(); editors.js.refresh(); }
+    function saveCodeState() { try { localStorage.setItem(CODE_KEY, JSON.stringify(codeState)); } catch {} }
+    function buildPreviewDoc() { return "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<style>\n" + codeState.css + "\n</style>\n</head>\n<body>\n" + codeState.html + "\n<script>\ntry {\n" + codeState.js + "\n} catch (e) {\n  console.error(e);\n  document.body.insertAdjacentHTML('beforeend', '<pre style=\"position:fixed;bottom:0;left:0;right:0;margin:0;padding:8px 12px;background:#1a0a0a;color:#ff6b6b;font:12px/1.5 monospace;white-space:pre-wrap;border-top:1px solid #ff6b6b33;z-index:9999;\">' + String(e && e.stack || e) + '<\\/pre>');\n}\n<\/script>\n</body>\n</html>"; }
+    function updatePreview() { const frame = document.getElementById("preview-frame"); if (frame) frame.srcdoc = buildPreviewDoc(); }
     function codeRun() { updatePreview(); }
-    function codeReset() {
-      editors.html.setValue("");
-      editors.css.setValue("");
-      editors.js.setValue("");
-      updatePreview();
+    function codeReset() { codeState = { html: "", css: "", js: "" }; if (editors.html) { editors.html.setValue(""); editors.css.setValue(""); editors.js.setValue(""); } updatePreview(); saveCodeState(); }
+    function codeBeautify() {
+      if (!editors.html) return;
+      try { if (window.html_beautify) { const v = html_beautify(editors.html.getValue(), { indent_size: 2, wrap_line_length: 0, end_with_newline: false }); editors.html.setValue(v); codeState.html = v; } if (window.css_beautify) { const v = css_beautify(editors.css.getValue(), { indent_size: 2 }); editors.css.setValue(v); codeState.css = v; } if (window.js_beautify) { const v = js_beautify(editors.js.getValue(), { indent_size: 2 }); editors.js.setValue(v); codeState.js = v; } updatePreview(); saveCodeState(); } catch (e) { console.error("Beautify failed", e); }
     }
-    initCode();
+    function codeNewTab() { const blob = new Blob([buildPreviewDoc()], { type: "text/html" }); const url = URL.createObjectURL(blob); window.open(url, "_blank", "noopener,noreferrer"); setTimeout(() => URL.revokeObjectURL(url), 10000); }
+    function codeToggleLayout() { codeLayout = codeLayout === "vertical" ? "horizontal" : "vertical"; const editorsEl = document.getElementById("code-editors"); editorsEl.classList.toggle("vertical", codeLayout === "vertical"); editorsEl.classList.toggle("horizontal", codeLayout === "horizontal"); document.querySelectorAll("[data-split]").forEach(function(h) { h.classList.toggle("row", codeLayout === "vertical"); h.classList.toggle("col", codeLayout === "horizontal"); }); setTimeout(refreshAllEditors, 60); }
+    function codeToggleFullscreen() { const el = document.getElementById("code-container"); if (document.fullscreenElement) document.exitFullscreen(); else el.requestFullscreen(); }
+    function applyEditorSizes() { const ids = ["panel-html", "panel-css", "panel-js"]; ids.forEach(function(id, i) { const el = document.getElementById(id); if (el) el.style.flex = "0 0 " + editorSizes[i] + "%"; }); }
+    function applyMainSizes() { const e = document.getElementById("code-editors"); const p = document.getElementById("preview-panel"); if (e) e.style.flex = "0 0 " + mainSizes[0] + "%"; if (p) p.style.flex = "0 0 " + mainSizes[1] + "%"; }
+    function setupSplitters() {
+      document.querySelectorAll("[data-split]").forEach(function(handle) {
+        const index = parseInt(handle.getAttribute("data-split"), 10);
+        makeSplitter(handle, function() { return codeLayout === "vertical" ? "y" : "x"; }, function() { return { prev: editorSizes[index], next: editorSizes[index + 1], container: document.getElementById("code-editors") }; }, function(np, nn) { editorSizes[index] = np; editorSizes[index + 1] = nn; applyEditorSizes(); });
+      });
+      makeSplitter(document.getElementById("split-main"), function() { return "x"; }, function() { return { prev: mainSizes[0], next: mainSizes[1], container: document.getElementById("code-body") }; }, function(np, nn) { mainSizes[0] = np; mainSizes[1] = nn; applyMainSizes(); });
+    }
+    function makeSplitter(handle, axisFn, stateFn, applyFn) {
+      handle.addEventListener("mousedown", function(e) {
+        e.preventDefault(); const axis = axisFn(); const state = stateFn(); const rect = state.container.getBoundingClientRect();
+        const containerSize = axis === "y" ? rect.height : rect.width; const startPos = axis === "y" ? e.clientY : e.clientX;
+        const startPrev = state.prev; const startNext = state.next; const sum = startPrev + startNext;
+        handle.classList.add("dragging"); document.body.style.userSelect = "none"; document.body.style.cursor = axis === "y" ? "row-resize" : "col-resize";
+        var iframes = document.querySelectorAll("iframe"); iframes.forEach(function(f) { f.style.pointerEvents = "none"; });
+        var onMove = function(ev) {
+          const pos = axis === "y" ? ev.clientY : ev.clientX; const deltaPct = (pos - startPos) / containerSize * 100;
+          let np = startPrev + deltaPct; let nn = startNext - deltaPct;
+          if (np < 0) { nn += np; np = 0; } if (nn < 0) { np += nn; nn = 0; } if (np > sum) { np = sum; nn = 0; } if (nn > sum) { nn = sum; np = 0; }
+          applyFn(np, nn);
+        };
+        var onUp = function() { document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); document.body.style.userSelect = ""; document.body.style.cursor = ""; iframes.forEach(function(f) { f.style.pointerEvents = ""; }); handle.classList.remove("dragging"); refreshAllEditors(); };
+        document.addEventListener("mousemove", onMove); document.addEventListener("mouseup", onUp);
+      });
+    }
+    function setupEditorResizeObservers() {
+      const hosts = [["host-html", "html"], ["host-css", "css"], ["host-js", "js"]];
+      hosts.forEach(function(pair) { const host = document.getElementById(pair[0]); if (!host || !editors[pair[1]] || !window.ResizeObserver) return; const ro = new ResizeObserver(function() { editors[pair[1]].refresh(); }); ro.observe(host); });
+    }
+    
+    initBase('code.html');
+    initCodeEditor();
   </script>
 </body>
 </html>
