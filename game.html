@@ -12,7 +12,7 @@
       <button class="player-btn" onclick="openNewTab()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
       <button class="player-btn" onclick="toggleFs()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg></button>
     </div>
-    <div class="player-stage">
+    <div class="player-stage" id="player-stage">
       <iframe class="player-frame" id="game-frame" allow="autoplay; fullscreen; gamepad; pointer-lock" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms allow-popups allow-modals"></iframe>
     </div>
   </div>
@@ -58,8 +58,15 @@
       setTimeout(() => URL.revokeObjectURL(url), 10000);
     }
     function toggleFs() {
-      if (document.fullscreenElement) document.exitFullscreen();
-      else document.documentElement.requestFullscreen();
+      const el = document.getElementById('player-stage');
+      if (!el) return;
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        el.requestFullscreen().catch(err => {
+          console.error("Fullscreen error:", err);
+        });
+      }
     }
     initBase('game');
     updateFavBtn();
