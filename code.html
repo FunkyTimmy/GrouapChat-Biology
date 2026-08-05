@@ -2,8 +2,11 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Code Editor</title>
   <link rel="stylesheet" href="style.css">
+  <!-- CodeMirror Core & Dracula Theme -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+  <!-- Hint Dropdown CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
 </head>
 <body>
   <header class="header">
@@ -99,15 +102,36 @@
     </div>
   </main>
 
-  <script src="config.js"></script><script src="app.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+  
+  <!-- CodeMirror Core & Modes -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+  
+  <!-- CodeMirror Addons (Auto-complete & UI) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/html-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/css-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/javascript-hint.min.js"></script>
+  
+  <!-- JS Beautify for formatting code -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-html.min.js"></script>
+
   <script>
     let editors = { html: null, css: null, js: null };
-    let editorSizes = [33.33, 33.33, 33.34]; let mainSizes = [60, 40]; let codeLayout = "vertical";
+    let editorSizes = [33.33, 33.33, 33.34]; 
+    let mainSizes = [60, 40]; 
+    let codeLayout = "vertical";
     
     // Wait for ALL scripts to load before initializing CodeMirror
     window.addEventListener('load', function() {
@@ -115,10 +139,32 @@
         console.error("CodeMirror failed to load");
         return;
       }
-      editors.html = CodeMirror.fromTextArea(document.getElementById('editor-html'), { mode: "htmlmixed", lineNumbers: true, theme: "dracula", lineWrapping: true });
-      editors.css = CodeMirror.fromTextArea(document.getElementById('editor-css'), { mode: "css", lineNumbers: true, theme: "dracula", lineWrapping: true });
-      editors.js = CodeMirror.fromTextArea(document.getElementById('editor-js'), { mode: "javascript", lineNumbers: true, theme: "dracula", lineWrapping: true });
       
+      // Shared options for all editors
+      const commonOpts = {
+        theme: "dracula",
+        lineNumbers: true,
+        lineWrapping: true,
+        indentUnit: 2,
+        tabSize: 2,
+        autoCloseBrackets: true,
+        autoCloseTags: true,
+        matchBrackets: true,
+        styleActiveLine: true,
+        extraKeys: {
+          "Ctrl-Space": "autocomplete",
+          "Ctrl-Enter": function() { updatePreview(); },
+          "Cmd-Enter": function() { updatePreview(); },
+          "Ctrl-S": function(cm) { saveCodeState(); },
+          "Cmd-S": function(cm) { saveCodeState(); }
+        }
+      };
+
+      editors.html = CodeMirror.fromTextArea(document.getElementById('editor-html'), { ...commonOpts, mode: "htmlmixed" });
+      editors.css = CodeMirror.fromTextArea(document.getElementById('editor-css'), { ...commonOpts, mode: "css" });
+      editors.js = CodeMirror.fromTextArea(document.getElementById('editor-js'), { ...commonOpts, mode: "javascript" });
+      
+      // Load saved code from localStorage
       try {
         const saved = localStorage.getItem(CODE_KEY);
         if (saved) {
@@ -128,19 +174,26 @@
             editors.css.setValue(p.css || "");
             editors.js.setValue(p.js || "");
           }
+        } else {
+          // Load default boilerplate if no save exists
+          editors.html.setValue(DEFAULT_CODE.html);
+          editors.css.setValue(DEFAULT_CODE.css);
+          editors.js.setValue(DEFAULT_CODE.js);
         }
       } catch(e) {}
       
       const onChange = () => {
-        const state = { html: editors.html.getValue(), css: editors.css.getValue(), js: editors.js.getValue() };
-        localStorage.setItem(CODE_KEY, JSON.stringify(state));
+        saveCodeState();
         updatePreview();
       };
       editors.html.on("change", onChange);
       editors.css.on("change", onChange);
       editors.js.on("change", onChange);
       
-      applyEditorSizes(); applyMainSizes(); setupSplitters(); updatePreview();
+      applyEditorSizes(); 
+      applyMainSizes(); 
+      setupSplitters(); 
+      updatePreview();
       
       // Refresh to ensure they render correctly
       setTimeout(() => {
@@ -150,46 +203,95 @@
       }, 100);
     });
 
+    function saveCodeState() {
+      if (!editors.html) return;
+      const state = { html: editors.html.getValue(), css: editors.css.getValue(), js: editors.js.getValue() };
+      localStorage.setItem(CODE_KEY, JSON.stringify(state));
+    }
+
     function updatePreview() {
       if (!editors.html) return;
       const html = editors.html.getValue();
       const css = editors.css.getValue();
       const js = editors.js.getValue();
-      const doc = `<!DOCTYPE html><html><head><style>${css}</style></head><body>${html}<script>try{${js}}catch(e){console.error(e)}<\/script></body></html>`;
+      const doc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>${css}</style></head><body>${html}<script>try{${js}}catch(e){console.error(e)}<\/script></body></html>`;
       document.getElementById('preview-frame').srcdoc = doc;
     }
+    
     function codeRun() { updatePreview(); }
+    
     function codeReset() {
-      editors.html.setValue(""); editors.css.setValue(""); editors.js.setValue("");
+      if (!editors.html) return;
+      editors.html.setValue("");
+      editors.css.setValue("");
+      editors.js.setValue("");
+      saveCodeState();
       updatePreview();
     }
-    function codeBeautify() { console.log("Beautify clicked"); }
+    
+    function codeBeautify() {
+      if (!editors.html) return;
+      if (typeof html_beautify !== 'undefined') {
+        editors.html.setValue(html_beautify(editors.html.getValue(), { indent_size: 2, wrap_line_length: 0 }));
+        editors.css.setValue(css_beautify(editors.css.getValue(), { indent_size: 2 }));
+        editors.js.setValue(js_beautify(editors.js.getValue(), { indent_size: 2 }));
+        saveCodeState();
+        updatePreview();
+      } else {
+        alert("Beautify library failed to load.");
+      }
+    }
+    
     function codeNewTab() {
+      if (!editors.html) return;
       const html = editors.html.getValue();
       const css = editors.css.getValue();
       const js = editors.js.getValue();
-      const doc = `<!DOCTYPE html><html><head><style>${css}</style></head><body>${html}<script>try{${js}}catch(e){console.error(e)}<\/script></body></html>`;
+      const doc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>${css}</style></head><body>${html}<script>try{${js}}catch(e){console.error(e)}<\/script></body></html>`;
       const newWin = window.open('about:blank', '_blank');
       if (newWin) {
         newWin.document.write(doc);
         newWin.document.close();
       }
     }
+    
     function codeToggleLayout() {
       codeLayout = codeLayout === "vertical" ? "horizontal" : "vertical";
       const editorsEl = document.getElementById("code-editors");
       editorsEl.classList.toggle("vertical", codeLayout === "vertical");
       editorsEl.classList.toggle("horizontal", codeLayout === "horizontal");
-      document.querySelectorAll("[data-split]").forEach(function(h) { h.classList.toggle("row", codeLayout === "vertical"); h.classList.toggle("col", codeLayout === "horizontal"); });
-      if (editors.html) { editors.html.refresh(); editors.css.refresh(); editors.js.refresh(); }
+      document.querySelectorAll("[data-split]").forEach(function(h) { 
+        h.classList.toggle("row", codeLayout === "vertical"); 
+        h.classList.toggle("col", codeLayout === "horizontal"); 
+      });
+      if (editors.html) { 
+        editors.html.refresh(); 
+        editors.css.refresh(); 
+        editors.js.refresh(); 
+      }
     }
+    
     function codeToggleFullscreen() {
       const el = document.getElementById("code-container");
       if (document.fullscreenElement) document.exitFullscreen();
       else el.requestFullscreen();
     }
-    function applyEditorSizes() { const ids = ["panel-html", "panel-css", "panel-js"]; ids.forEach(function(id, i) { const el = document.getElementById(id); if (el) el.style.flex = "0 0 " + editorSizes[i] + "%"; }); }
-    function applyMainSizes() { const e = document.getElementById("code-editors"); const p = document.getElementById("preview-panel"); if (e) e.style.flex = "0 0 " + mainSizes[0] + "%"; if (p) p.style.flex = "0 0 " + mainSizes[1] + "%"; }
+    
+    function applyEditorSizes() { 
+      const ids = ["panel-html", "panel-css", "panel-js"]; 
+      ids.forEach(function(id, i) { 
+        const el = document.getElementById(id); 
+        if (el) el.style.flex = "0 0 " + editorSizes[i] + "%"; 
+      }); 
+    }
+    
+    function applyMainSizes() { 
+      const e = document.getElementById("code-editors"); 
+      const p = document.getElementById("preview-panel"); 
+      if (e) e.style.flex = "0 0 " + mainSizes[0] + "%"; 
+      if (p) p.style.flex = "0 0 " + mainSizes[1] + "%"; 
+    }
+    
     function setupSplitters() {
       document.querySelectorAll("[data-split]").forEach(function(handle) {
         const index = parseInt(handle.getAttribute("data-split"), 10);
@@ -197,6 +299,7 @@
       });
       makeSplitter(document.getElementById("split-main"), function() { return "x"; }, function() { return { prev: mainSizes[0], next: mainSizes[1], container: document.getElementById("code-body") }; }, function(np, nn) { mainSizes[0] = np; mainSizes[1] = nn; applyMainSizes(); });
     }
+    
     function makeSplitter(handle, axisFn, stateFn, applyFn) {
       handle.addEventListener("mousedown", function(e) {
         e.preventDefault(); const axis = axisFn(); const state = stateFn(); const rect = state.container.getBoundingClientRect();
@@ -210,8 +313,16 @@
           if (np < 0) { nn += np; np = 0; } if (nn < 0) { np += nn; nn = 0; } if (np > sum) { np = sum; nn = 0; } if (nn > sum) { nn = sum; np = 0; }
           applyFn(np, nn);
         };
-        var onUp = function() { document.removeEventListener("mousemove", onMove); document.removeEventListener("mouseup", onUp); document.body.style.userSelect = ""; document.body.style.cursor = ""; iframes.forEach(function(f) { f.style.pointerEvents = ""; }); handle.classList.remove("dragging"); };
-        document.addEventListener("mousemove", onMove); document.addEventListener("mouseup", onUp);
+        var onUp = function() { 
+          document.removeEventListener("mousemove", onMove); 
+          document.removeEventListener("mouseup", onUp); 
+          document.body.style.userSelect = ""; 
+          document.body.style.cursor = ""; 
+          iframes.forEach(function(f) { f.style.pointerEvents = ""; }); 
+          handle.classList.remove("dragging"); 
+        };
+        document.addEventListener("mousemove", onMove); 
+        document.addEventListener("mouseup", onUp);
       });
     }
     
