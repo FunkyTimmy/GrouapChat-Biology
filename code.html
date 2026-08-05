@@ -2,6 +2,8 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Code Editor</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
 </head>
 <body>
   <header class="header">
@@ -98,12 +100,11 @@
   </main>
 
   <script src="config.js"></script><script src="app.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
   <script>
     let editors = { html: null, css: null, js: null };
     let editorSizes = [33.33, 33.33, 33.34]; let mainSizes = [60, 40]; let codeLayout = "vertical";
@@ -114,9 +115,9 @@
         console.error("CodeMirror failed to load");
         return;
       }
-      editors.html = CodeMirror.fromTextArea(document.getElementById('editor-html'), { mode: "htmlmixed", lineNumbers: true, lineWrapping: true });
-      editors.css = CodeMirror.fromTextArea(document.getElementById('editor-css'), { mode: "css", lineNumbers: true, lineWrapping: true });
-      editors.js = CodeMirror.fromTextArea(document.getElementById('editor-js'), { mode: "javascript", lineNumbers: true, lineWrapping: true });
+      editors.html = CodeMirror.fromTextArea(document.getElementById('editor-html'), { mode: "htmlmixed", lineNumbers: true, theme: "dracula", lineWrapping: true });
+      editors.css = CodeMirror.fromTextArea(document.getElementById('editor-css'), { mode: "css", lineNumbers: true, theme: "dracula", lineWrapping: true });
+      editors.js = CodeMirror.fromTextArea(document.getElementById('editor-js'), { mode: "javascript", lineNumbers: true, theme: "dracula", lineWrapping: true });
       
       try {
         const saved = localStorage.getItem(CODE_KEY);
