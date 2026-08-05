@@ -1,0 +1,25 @@
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>404 Not Found</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header"><div class="header-inner">
+    <button class="logo-btn" onclick="navigate('/')" id="logo-btn"><span class="logo-badge" id="logo-badge"></span><span class="logo-text" id="logo-text"></span></button>
+  </div></header>
+  <main class="main"><div class="container">
+    <div class="empty" style="margin-top: 4rem;">
+      <div class="empty-icon lg" style="background: var(--accent); color: var(--rose); font-size: 2rem; font-weight: bold;">404</div>
+      <h3>Page Not Found</h3>
+      <p>Oops! The page you are looking for does not exist. It might have been moved or deleted.</p>
+      <button class="btn btn-emerald" onclick="navigate('/')">Go Back Home</button>
+    </div>
+  </div></main>
+  <footer class="footer"><div class="footer-inner"><div class="footer-brand"><span><strong id="footer-name"></strong><span> · </span><span id="footer-tagline"></span></span></div><p>© <span id="year"></span> <span id="footer-copy-name"></span>.</p></div></footer>
+
+  <script src="config.js"></script><script src="app.js"></script>
+  <script>
+    initBase('/404.html');
+  </script>
+</body>
+</html>
