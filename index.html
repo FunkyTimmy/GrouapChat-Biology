@@ -8,19 +8,25 @@
 <body>
   <header class="header">
     <div class="header-inner">
-      <button class="logo-btn" onclick="navigate('/')" id="logo-btn"><span class="logo-badge" id="logo-badge"></span><span class="logo-text" id="logo-text"></span></button>
+      <button class="logo-btn" onclick="navigate('index.html')" id="logo-btn"><span class="logo-badge" id="logo-badge"></span><span class="logo-text" id="logo-text"></span></button>
       <nav class="nav" role="navigation">
-        <button class="nav-btn active" data-route="/" onclick="navigate('/')"><span>Games</span></button>
-        <button class="nav-btn" data-route="/apps.html" onclick="navigate('/apps.html')"><span>Apps</span></button>
-        <button class="nav-btn" data-route="/favorites.html" onclick="navigate('/favorites.html')"><span>Favorites</span><span class="nav-badge hidden" id="fav-count">0</span></button>
-        <button class="nav-btn" data-route="/code.html" onclick="navigate('/code.html')"><span>Code</span></button>
+        <button class="nav-btn active" data-route="index.html" onclick="navigate('index.html')"><span>Games</span></button>
+        <button class="nav-btn" data-route="apps.html" onclick="navigate('apps.html')"><span>Apps</span></button>
+        <button class="nav-btn" data-route="favorites.html" onclick="navigate('favorites.html')"><span>Favorites</span><span class="nav-badge hidden" id="fav-count">0</span></button>
+        <button class="nav-btn" data-route="code.html" onclick="navigate('code.html')"><span>Code</span></button>
       </nav>
       <div class="search-wrap">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input class="search-input" type="search" id="search" placeholder="Search games…" oninput="window.location.href='/search.html?q='+encodeURIComponent(this.value)">
+        <input class="search-input" type="search" id="search" placeholder="Search games…" onkeydown="if(event.key==='Enter') navigate('search.html?q='+encodeURIComponent(this.value))">
       </div>
       <div class="spacer-flex"></div>
       <button class="icon-btn" onclick="toggleTheme()"><svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle></svg></button>
+    </div>
+    <div class="mobile-search">
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input class="search-input" type="search" placeholder="Search games…" onkeydown="if(event.key==='Enter') navigate('search.html?q='+encodeURIComponent(this.value))">
+      </div>
     </div>
   </header>
   <main class="main"><div id="view-games" class="container"></div></main>
@@ -39,18 +45,18 @@
             <div class="hero-eyebrow">Most popular</div>
             <div><h2>${escapeHtml(popular.name)}</h2><p style="margin-top:.25rem;font-size:.875rem;color:var(--muted-foreground)">Welcome to ${escapeHtml(SITE.name)}.</p></div>
             <p class="desc">${escapeHtml(popular.description)}</p>
-            <div class="hero-actions"><button class="btn btn-emerald btn-lg" onclick="navigate('/game.html?id=${popular.id}')">Play now</button></div>
+            <div class="hero-actions"><button class="btn btn-emerald btn-lg" onclick="navigate('game.html?id=${popular.id}')">Play now</button></div>
           </div></div></div></section>`;
       }
       html += '<section><div class="grid-header"><div><h2>All games</h2><p>'+GAMES.length+' games available</p></div>';
       html += '<div class="chips">';
-      ["All"].concat(GENRES).forEach(o => html += `<button class="chip ${o==='All'?'active':''}" onclick="navigate('/search.html?cat=${encodeURIComponent(o)}')">${escapeHtml(o)}</button>`);
+      ["All"].concat(GENRES).forEach(o => html += `<button class="chip ${o==='All'?'active':''}" onclick="navigate('search.html?cat=${encodeURIComponent(o)}')">${escapeHtml(o)}</button>`);
       html += '</div></div><div class="game-grid">';
       GAMES.forEach(g => html += renderCard(g, 'game'));
       html += '</div></section>';
       document.getElementById("view-games").innerHTML = html;
     }
-    initBase('/');
+    initBase('index.html');
     renderCurrentView();
   </script>
 </body>
