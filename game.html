@@ -1,0 +1,75 @@
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Loading...</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body style="overflow: hidden;">
+  <div class="player-wrap">
+    <div class="player-bar">
+      <button class="player-btn" onclick="history.back()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg> Back</button>
+      <span class="player-title" id="p-title"></span>
+      <button class="player-btn" id="p-fav" onclick="toggleFav()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
+      <button class="player-btn" onclick="openNewTab()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg></button>
+      <button class="player-btn" onclick="toggleFs()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg></button>
+    </div>
+    <div class="player-stage">
+      <iframe class="player-frame" id="game-frame" allow="autoplay; fullscreen; gamepad; pointer-lock" sandbox="allow-scripts allow-same-origin allow-pointer-lock allow-forms allow-popups allow-modals"></iframe>
+    </div>
+  </div>
+
+  <script src="config.js"></script><script src="app.js"></script>
+  <script>
+    let activeGame = null;
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    activeGame = getGameById(id);
+
+    if (!activeGame) {
+      window.location.href = "/404.html";
+    } else {
+      document.getElementById("p-title").textContent = activeGame.name;
+      setTitle(activeGame.name);
+      
+      // Render the game inside the iframe directly
+      // We inject a base tag so relative paths in the game resolve correctly
+      fetch(activeGame.fileUrl, { mode: "cors" })
+        .then(res => res.ok ? res.text() : Promise.reject("HTTP " + res.status))
+        .then(html => {
+          const baseTag = `<base href="${escapeHtml(activeGame.fileUrl)}">`;
+          if (/<head[^>]*>/i.test(html)) html = html.replace(/<head[^>]*>/i, m => m + baseTag);
+          else if (/<html[^>]*>/i.test(html)) html = html.replace(/<html[^>]*>/i, m => m + `<head>${baseTag}</head>`);
+          else html = baseTag + html;
+          document.getElementById('game-frame').srcdoc = html;
+        })
+        .catch(err => {
+          document.getElementById('game-frame').srcdoc = `<body style="color:white;background:#09090b;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center">Failed to load: ${err}</body>`;
+        });
+    }
+
+    function toggleFav() {
+      toggleFavorite(activeGame.id);
+      updateFavBtn();
+    }
+    function updateFavBtn() {
+      const fav = isFavorite(activeGame.id);
+      const btn = document.getElementById('p-fav');
+      btn.querySelector('svg').setAttribute('fill', fav ? 'currentColor' : 'none');
+      btn.style.color = fav ? 'var(--rose)' : 'var(--foreground)';
+    }
+    function openNewTab() {
+      const html = document.getElementById('game-frame').getAttribute('srcdoc');
+      const blob = new Blob([html], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    }
+    function toggleFs() {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen();
+    }
+
+    initBase('/game.html');
+    updateFavBtn();
+  </script>
+</body>
+</html>
