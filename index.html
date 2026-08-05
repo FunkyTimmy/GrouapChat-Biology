@@ -9,32 +9,32 @@
 <body>
   <header class="header">
     <div class="header-inner">
-      <button class="logo-btn" onclick="navigate('index.html')" id="logo-btn" aria-label="Gc Biology home">
+      <button class="logo-btn" onclick="navigate('./')" id="logo-btn" aria-label="Gc Biology home">
         <span class="logo-badge" id="logo-badge"></span>
         <span class="logo-text" id="logo-text">Gc Biology</span>
       </button>
       <nav class="nav" role="navigation">
-        <button class="nav-btn active" data-route="index.html" onclick="navigate('index.html')">
+        <button class="nav-btn active" data-route="./" onclick="navigate('./')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"></line><line x1="8" y1="9" x2="8" y2="13"></line><line x1="15" y1="12" x2="15.01" y2="12"></line><line x1="18" y1="10" x2="18.01" y2="10"></line><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z"></path></svg>
           <span class="nav-label" style="display: inline;">Games</span>
         </button>
-        <button class="nav-btn" data-route="apps.html" onclick="navigate('apps.html')">
+        <button class="nav-btn" data-route="apps" onclick="navigate('apps')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
           <span class="nav-label" style="display: inline;">Apps</span>
         </button>
-        <button class="nav-btn" data-route="favorites.html" onclick="navigate('favorites.html')">
+        <button class="nav-btn" data-route="favorites" onclick="navigate('favorites')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
           <span class="nav-label" style="display: inline;">Favorites</span>
           <span class="nav-badge hidden" id="fav-count">0</span>
         </button>
-        <button class="nav-btn" data-route="code.html" onclick="navigate('code.html')">
+        <button class="nav-btn" data-route="code" onclick="navigate('code')">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
           <span class="nav-label" style="display: inline;">Code</span>
         </button>
       </nav>
       <div class="search-wrap">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input class="search-input" type="search" id="search" placeholder="Search games…" aria-label="Search games" onkeydown="if(event.key==='Enter') navigate('search.html?q='+encodeURIComponent(this.value))">
+        <input class="search-input" type="search" id="search" placeholder="Search games…" aria-label="Search games" onkeydown="if(event.key==='Enter') navigate('search?q='+encodeURIComponent(this.value))">
       </div>
       <div class="spacer-flex"></div>
       <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
@@ -44,7 +44,7 @@
     <div class="mobile-search">
       <div class="search-wrap">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input class="search-input" type="search" id="search-mobile" placeholder="Search games…" aria-label="Search games" onkeydown="if(event.key==='Enter') navigate('search.html?q='+encodeURIComponent(this.value))">
+        <input class="search-input" type="search" id="search-mobile" placeholder="Search games…" aria-label="Search games" onkeydown="if(event.key==='Enter') navigate('search?q='+encodeURIComponent(this.value))">
       </div>
     </div>
   </header>
@@ -85,21 +85,21 @@
         '<div class="hero-body"><div class="hero-eyebrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Most popular</div>' +
         '<div><h2>' + escapeHtml(game.name) + '</h2><p style="margin-top:.25rem;font-size:.875rem;color:var(--muted-foreground)">Welcome to ' + escapeHtml(SITE.name) + '.</p></div>' +
         '<p class="desc">' + escapeHtml(game.description) + '</p>' +
-        '<div class="hero-actions"><button class="btn btn-emerald btn-lg" onclick="navigate(\'game.html?id=' + game.id + '\')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Play now</button><span class="muted-sm">No sign-up · plays instantly</span></div>' +
+        '<div class="hero-actions"><button class="btn btn-emerald btn-lg" onclick="navigate(\'game?id=' + game.id + '\')"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg> Play now</button><span class="muted-sm">No sign-up · plays instantly</span></div>' +
         '</div></div></div></section>';
     }
     function renderRecent() {
-      let cards = recent.map(g => '<div>' + renderCard(g, 'game') + '</div>').join("");
+      let cards = recent.map(g => renderCard(g, 'game')).join("");
       return '<section style="margin-bottom:2.5rem"><div class="section-title"><p class="eyebrow">Pick up where you left off</p><h2>Continue playing</h2></div><div class="recent-row scrollbar-thin">' + cards + '</div></section>';
     }
     function renderChips() {
       const opts = ["All"].concat(GENRES);
-      return '<div class="chips scrollbar-thin">' + opts.map(o => '<button class="chip' + (o === "All" ? " active" : "") + '" onclick="navigate(\'search.html?cat=' + encodeURIComponent(o) + '\')">' + escapeHtml(o) + '</button>').join("") + '</div>';
+      return '<div class="chips scrollbar-thin">' + opts.map(o => '<button class="chip' + (o === "All" ? " active" : "") + '" onclick="navigate(\'search?cat=' + encodeURIComponent(o) + '\')">' + escapeHtml(o) + '</button>').join("") + '</div>';
     }
     function renderNoGames() {
       return '<div class="empty"><div class="empty-icon lg gradient"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"/><line x1="8" y1="9" x2="8" y2="13"/><line x1="15" y1="12" x2="15.01" y2="12"/><line x1="18" y1="10" x2="18.01" y2="10"/><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z"/></svg></div><div><h3>No games yet</h3><p>Add your own games by editing the <code>GAMES</code> array inside <code>config.js</code>.</p></div></div>';
     }
-    initBase('index.html');
+    initBase('./');
     renderCurrentView();
   </script>
 </body>
