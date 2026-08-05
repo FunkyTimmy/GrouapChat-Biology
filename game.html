@@ -29,7 +29,6 @@
     else {
       document.getElementById("p-title").textContent = activeGame.name;
       setTitle(activeGame.name);
-      // Using src directly natively supports Base64 scripts and relative paths perfectly
       document.getElementById('game-frame').src = activeGame.fileUrl;
     }
     function toggleFav() { toggleFavorite(activeGame.id); }
@@ -41,7 +40,6 @@
       btn.style.color = fav ? 'var(--rose)' : 'var(--foreground)';
     }
     function openNewTab() {
-      // Fetch the HTML, inject base tag, and write to about:blank
       fetch(activeGame.fileUrl)
         .then(res => res.ok ? res.text() : Promise.reject("HTTP " + res.status))
         .then(html => {
@@ -55,7 +53,7 @@
             newWin.document.close();
           }
         })
-        .catch(() => window.open(activeGame.fileUrl, '_blank')); // Fallback to direct URL
+        .catch(() => window.open(activeGame.fileUrl, '_blank'));
     }
     function toggleFs() {
       const el = document.getElementById('player-stage');
@@ -63,6 +61,15 @@
       if (document.fullscreenElement) document.exitFullscreen();
       else el.requestFullscreen().catch(err => console.error("Fullscreen error:", err));
     }
+
+    // Hotkey: Press 'F' to toggle fullscreen, hides UI automatically
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'f' || e.key === 'F') {
+        e.preventDefault();
+        toggleFs();
+      }
+    });
+
     initBase('game');
     updateFavBtn();
   </script>
