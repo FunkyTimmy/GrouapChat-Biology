@@ -32,7 +32,7 @@ const GAMES = [
     name: "Escape Road",
     description: "You just robbed a bank and you have to run away from the police. Your wanted level gets higher every minute. How long can you survive?",
     genre: "Arcade",
-    thumbnail: "images/EscapeRoad.png",
+    thumbnail: "images/escaperoad.jpg",
     fileUrl: "games/escaperoad.html",
     popular: false,
   },
@@ -48,11 +48,11 @@ const GAMES = [
 ];
 
 const APPS = [
-  {
-    id: "desmos",
-    name: "Desmos Graphing",
-    description: "An online graphing calculator for math and science.",
-    thumbnail: "images/desmos.png",
-    fileUrl: "apps/desmos.html"
-  }
+  // {
+  //   id: "desmos",
+  //   name: "Desmos Graphing",
+  //   description: "An online graphing calculator for math and science.",
+  //   thumbnail: "images/desmos.png",
+  //   fileUrl: "apps/desmos.html"
+  // }
 ];
