@@ -4,18 +4,40 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="header"><div class="header-inner">
-    <button class="logo-btn" onclick="navigate('./')" id="logo-btn"><span class="logo-badge" id="logo-badge"></span><span class="logo-text" id="logo-text"></span></button>
-  </div></header>
-  <main class="main"><div class="container">
-    <div class="empty" style="margin-top: 4rem;">
-      <div class="empty-icon lg" style="background: var(--accent); color: var(--rose); font-size: 2rem; font-weight: bold;">404</div>
-      <h3>Page Not Found</h3>
-      <p>Oops! The page you are looking for does not exist. It might have been moved or deleted.</p>
-      <button class="btn btn-emerald" onclick="navigate('./')">Go Back Home</button>
+  <header class="header">
+    <div class="header-inner">
+      <button class="logo-btn" onclick="navigate('./')" id="logo-btn"><span class="logo-badge" id="logo-badge"></span><span class="logo-text" id="logo-text"></span></button>
+      <nav class="nav" role="navigation">
+        <button class="nav-btn" data-route="./" onclick="navigate('./')"><span>Games</span></button>
+        <button class="nav-btn" data-route="apps" onclick="navigate('apps')"><span>Apps</span></button>
+        <button class="nav-btn" data-route="favorites" onclick="navigate('favorites')"><span>Favorites</span><span class="nav-badge hidden" id="fav-count">0</span></button>
+        <button class="nav-btn" data-route="code" onclick="navigate('code')"><span>Code</span></button>
+      </nav>
+      <div class="spacer-flex"></div>
+      <button class="icon-btn" onclick="toggleTheme()"><svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle></svg></button>
     </div>
-  </div></main>
-  <footer class="footer"><div class="footer-inner"><div class="footer-brand"><span class="footer-badge" id="footer-badge"></span><span><strong id="footer-name"></strong><span> · </span><span id="footer-tagline"></span></span></div><p>© <span id="year"></span> <span id="footer-copy-name"></span>.</p></div></footer>
+  </header>
+  
+  <main class="main">
+    <div class="container">
+      <div class="empty" style="margin-top: 4rem;">
+        <div class="empty-icon lg" style="background: var(--accent); color: var(--rose); font-size: 2rem; font-weight: bold;">404</div>
+        <h3>Page Not Found</h3>
+        <p>Oops! The page you are looking for does not exist. It might have been moved or deleted.</p>
+        <button class="btn btn-emerald" onclick="navigate('./')">Go Back Home</button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-badge" id="footer-badge"></span>
+        <span><strong id="footer-name"></strong><span> · </span><span id="footer-tagline"></span></span>
+      </div>
+      <p>© <span id="year"></span> <span id="footer-copy-name"></span>.</p>
+    </div>
+  </footer>
 
   <script src="config.js"></script><script src="app.js"></script>
   <script>initBase('404');</script>
