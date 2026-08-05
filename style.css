@@ -156,7 +156,6 @@ input, textarea { font-family: inherit }
 .editor-dot { width: .5rem; height: .5rem; border-radius: 99px; flex-shrink: 0 }
 .editor-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-foreground) }
 .editor-host { position: relative; flex: 1; overflow: hidden; min-height: 0; min-width: 0; background: #282a36; }
-.editor-host .CodeMirror { position: absolute; inset: 0; height: 100% !important; font-family: ui-monospace, "SF Mono", Monaco, monospace; font-size: 13px; line-height: 1.6; }
 .editor-host > textarea { display: none !important; }
 .splitter { flex: 0 0 6px; background: var(--border); position: relative; z-index: 6; transition: background .12s }
 .splitter.col { cursor: col-resize } .splitter.row { cursor: row-resize }
@@ -168,9 +167,6 @@ input, textarea { font-family: inherit }
 .preview-dots span { width: .625rem; height: .625rem; border-radius: 99px }
 .preview-label { margin-left: .5rem; font-size: .75rem; font-weight: 500; color: #71717a }
 .preview-frame { flex: 1; border: none; background: #fff; width: 100%; min-height: 0 }
-.CodeMirror { font-family: ui-monospace, "SF Mono", Monaco, monospace !important; font-size: 13px !important; line-height: 1.6 !important; height: 100% }
-.CodeMirror-matchingbracket { font-weight: 700; text-decoration: underline; text-decoration-color: var(--emerald) !important }
-.CodeMirror-placeholder { opacity: .55; font-style: italic }
 
 .footer { margin-top: auto; border-top: 1px solid var(--border); background: var(--muted); flex-shrink: 0; }
 .footer-inner { max-width: 80rem; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: .75rem; padding: 1.5rem 1rem; font-size: .875rem; color: var(--muted-foreground) }
@@ -181,3 +177,64 @@ input, textarea { font-family: inherit }
 .footer-sep { margin: 0 .375rem; opacity: .5 }
 .hidden { display: none !important }
 @keyframes spin { to { transform: rotate(360deg) } }
+
+/* ========================================================================
+   CODEMIRROR IDE STYLING (CodePen Look & Feel)
+   ======================================================================== */
+.CodeMirror {
+  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', Menlo, Consolas, 'DejaVu Sans Mono', monospace !important;
+  font-size: 13.5px !important;
+  line-height: 1.6 !important;
+  height: 100% !important;
+  background: #282a36 !important;
+  color: #f8f8f2 !important;
+}
+.CodeMirror-gutters {
+  background: #21222c !important;
+  border-right: 1px solid #191a21 !important;
+  padding: 0 5px;
+}
+.CodeMirror-linenumber { color: #6272a4 !important; }
+.CodeMirror-cursor { border-left: 2px solid #f8f8f0 !important; }
+.CodeMirror-selected { background: rgba(248, 248, 242, 0.1) !important; }
+.CodeMirror-activeline-background { background: rgba(98, 114, 164, 0.15) !important; }
+.CodeMirror-matchingbracket { color: #50fa7b !important; text-decoration: underline; text-decoration-color: #50fa7b !important; }
+
+/* Dracula Theme Syntax Overrides */
+.cm-s-dracula .cm-keyword { color: #ff79c6 !important; }
+.cm-s-dracula .cm-atom { color: #bd93f9 !important; }
+.cm-s-dracula .cm-number { color: #bd93f9 !important; }
+.cm-s-dracula .cm-def { color: #50fa7b !important; }
+.cm-s-dracula .cm-variable { color: #f8f8f2 !important; }
+.cm-s-dracula .cm-variable-2 { color: #f8f8f2 !important; }
+.cm-s-dracula .cm-variable-3 { color: #ffb86c !important; }
+.cm-s-dracula .cm-property { color: #8be9fd !important; }
+.cm-s-dracula .cm-string { color: #f1fa8c !important; }
+.cm-s-dracula .cm-string-2 { color: #f1fa8c !important; }
+.cm-s-dracula .cm-comment { color: #6272a4 !important; font-style: italic !important; }
+.cm-s-dracula .cm-tag { color: #ff79c6 !important; }
+.cm-s-dracula .cm-attribute { color: #50fa7b !important; }
+.cm-s-dracula .cm-bracket { color: #f8f8f2 !important; }
+.cm-s-dracula .cm-operator { color: #ff79c6 !important; }
+
+/* Autocomplete Dropdown */
+.CodeMirror-hints {
+  background: #21222c !important;
+  border: 1px solid #191a21 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+  padding: 5px !important;
+  font-family: 'SF Mono', Menlo, Consolas, monospace !important;
+  font-size: 12px !important;
+  max-height: 200px !important;
+}
+.CodeMirror-hint {
+  color: #f8f8f2 !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  line-height: 1.4 !important;
+}
+li.CodeMirror-hint-active {
+  background: #ff79c6 !important;
+  color: #282a36 !important;
+}
