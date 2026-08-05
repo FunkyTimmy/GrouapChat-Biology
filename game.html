@@ -29,18 +29,8 @@
     else {
       document.getElementById("p-title").textContent = activeGame.name;
       setTitle(activeGame.name);
-      fetch(activeGame.fileUrl, { mode: "cors" })
-        .then(res => res.ok ? res.text() : Promise.reject("HTTP " + res.status))
-        .then(html => {
-          const baseTag = `<base href="${escapeHtml(activeGame.fileUrl)}">`;
-          if (/<head[^>]*>/i.test(html)) html = html.replace(/<head[^>]*>/i, m => m + baseTag);
-          else if (/<html[^>]*>/i.test(html)) html = html.replace(/<html[^>]*>/i, m => m + `<head>${baseTag}</head>`);
-          else html = baseTag + html;
-          document.getElementById('game-frame').srcdoc = html;
-        })
-        .catch(err => {
-          document.getElementById('game-frame').srcdoc = `<body style="color:white;background:#09090b;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center">Failed to load: ${err}</body>`;
-        });
+      // Using src directly natively supports Base64 scripts and relative paths perfectly
+      document.getElementById('game-frame').src = activeGame.fileUrl;
     }
     function toggleFav() { toggleFavorite(activeGame.id); }
     function updateFavBtn() {
@@ -51,22 +41,27 @@
       btn.style.color = fav ? 'var(--rose)' : 'var(--foreground)';
     }
     function openNewTab() {
-      const html = document.getElementById('game-frame').getAttribute('srcdoc');
-      const blob = new Blob([html], { type: "text/html" });
-      const url = URL.createObjectURL(blob);
-      window.open(url, "_blank");
-      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      // Fetch the HTML, inject base tag, and write to about:blank
+      fetch(activeGame.fileUrl)
+        .then(res => res.ok ? res.text() : Promise.reject("HTTP " + res.status))
+        .then(html => {
+          const newWin = window.open('about:blank', '_blank');
+          if (newWin) {
+            const baseTag = `<base href="${activeGame.fileUrl}">`;
+            if (/<head[^>]*>/i.test(html)) html = html.replace(/<head[^>]*>/i, m => m + baseTag);
+            else if (/<html[^>]*>/i.test(html)) html = html.replace(/<html[^>]*>/i, m => m + `<head>${baseTag}</head>`);
+            else html = baseTag + html;
+            newWin.document.write(html);
+            newWin.document.close();
+          }
+        })
+        .catch(() => window.open(activeGame.fileUrl, '_blank')); // Fallback to direct URL
     }
     function toggleFs() {
       const el = document.getElementById('player-stage');
       if (!el) return;
-      if (document.fullscreenElement) {
-        document.exitFullscreen();
-      } else {
-        el.requestFullscreen().catch(err => {
-          console.error("Fullscreen error:", err);
-        });
-      }
+      if (document.fullscreenElement) document.exitFullscreen();
+      else el.requestFullscreen().catch(err => console.error("Fullscreen error:", err));
     }
     initBase('game');
     updateFavBtn();
