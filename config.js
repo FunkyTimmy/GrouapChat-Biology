@@ -1,8 +1,8 @@
 const SITE = {
   name: "GC Biology",
   tagline: "Study With the GC",
-  logo: "https://cdn.jsdelivr.net/gh/FunkyTimmy/GrouapChat-Biology@main/images/Gc%20Biology%20Logo.png",
-  favicon: "https://cdn.jsdelivr.net/gh/FunkyTimmy/GrouapChat-Biology@main/images/Gc%20Biology%20Logo.png", 
+  logo: "/images/Gc%20Biology%20Logo.png",
+  favicon: "/images/Gc%20Biology%20Logo.png", 
   titleSuffix: " - GC Biology"
 };
 
@@ -48,11 +48,11 @@ const GAMES = [
 ];
 
 const APPS = [
-  {
-    id: "desmos",
-    name: "Desmos Graphing",
-    description: "An online graphing calculator for math and science.",
-    thumbnail: "https://cdn.jsdelivr.net/gh/FunkyTimmy/little-timmy-codepen@main/desmos.png",
-    fileUrl: "/apps/desmos.html"
-  }
+  // {
+  //   id: "desmos",
+  //   name: "Desmos Graphing",
+  //   description: "An online graphing calculator for math and science.",
+  //   thumbnail: "https://cdn.jsdelivr.net/gh/FunkyTimmy/little-timmy-codepen@main/desmos.png",
+  //   fileUrl: "/apps/desmos.html"
+  // }
 ];
