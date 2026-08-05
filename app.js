@@ -1,22 +1,44 @@
 let favorites = [];
 const FAV_KEY = "arcade:favorites";
 
-function getCookie(name) { const m = document.cookie.split("; ").find(r => r.startsWith(name + "=")); return m ? decodeURIComponent(m.split("=").slice(1).join("=")) : null; }
+function getCookie(name) { 
+  const m = document.cookie.split("; ").find(r => r.startsWith(name + "=")); 
+  return m ? decodeURIComponent(m.split("=").slice(1).join("=")) : null; 
+}
+
 function loadFavorites() {
-  try { const r = localStorage.getItem(FAV_KEY); if(r) { const p = JSON.parse(r); if(Array.isArray(p)) return p.filter(v=>typeof v==="string")); } } catch {}
-  const r = getCookie(FAV_KEY); if(r) { try { const p=JSON.parse(r); if(Array.isArray(p)) return p.filter(v=>typeof v==="string")); } catch {} }
+  try { 
+    const r = localStorage.getItem(FAV_KEY); 
+    if(r) { 
+      const p = JSON.parse(r); 
+      if(Array.isArray(p)) return p.filter(v => typeof v === "string"); 
+    } 
+  } catch {}
+  const r = getCookie(FAV_KEY); 
+  if(r) { 
+    try { 
+      const p = JSON.parse(r); 
+      if(Array.isArray(p)) return p.filter(v => typeof v === "string"); 
+    } catch {} 
+  }
   return [];
 }
-function saveFavorites() { try { localStorage.setItem(FAV_KEY, JSON.stringify(favorites)); } catch {} }
+
+function saveFavorites() { 
+  try { localStorage.setItem(FAV_KEY, JSON.stringify(favorites)); } catch {} 
+}
+
 function isFavorite(id) { return favorites.includes(id); }
+
 function toggleFavorite(id) {
   if (favorites.includes(id)) favorites = favorites.filter(x => x !== id);
   else favorites.push(id);
   saveFavorites();
   updateFavCount();
   if (typeof renderCurrentView === 'function') renderCurrentView();
-  if (typeof updateModalFav === 'function') updateModalFav();
+  if (typeof updateFavBtn === 'function') updateFavBtn();
 }
+
 function updateFavCount() {
   const el = document.getElementById("fav-count");
   if (!el) return;
@@ -43,7 +65,7 @@ function renderHeader(pathname) {
   document.querySelectorAll(".nav-btn").forEach(b => {
     const route = b.dataset.route;
     let isActive = false;
-    if (route === '/' && (pathname === '/' || pathname.endsWith('index.html'))) isActive = true;
+    if (route === 'index.html' && (pathname === 'index.html' || pathname === '/' || pathname === '')) isActive = true;
     else if (route === pathname) isActive = true;
     b.classList.toggle("active", isActive);
   });
@@ -81,10 +103,12 @@ function toggleTheme() {
   document.documentElement.setAttribute("data-theme", next);
   localStorage.setItem("arcade:theme", next);
   const icon = document.getElementById("theme-icon");
-  if (next === "dark") {
-    icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
-  } else {
-    icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+  if (icon) {
+    if (next === "dark") {
+      icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+    } else {
+      icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+    }
   }
 }
 
