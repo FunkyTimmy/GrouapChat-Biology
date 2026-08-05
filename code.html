@@ -2,9 +2,13 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Code Editor</title>
   <link rel="stylesheet" href="style.css">
+  
+  <!-- CodeMirror Core & Dracula Theme -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+  <!-- Hint & Lint CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.css">
 </head>
 <body>
   <header class="header">
@@ -102,11 +106,15 @@
 
   <script src="config.js"></script>
   <script src="app.js"></script>
+  
+  <!-- CodeMirror Core & Modes -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+  
+  <!-- CodeMirror Addons (Auto-complete, UI, Linting) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
@@ -115,6 +123,17 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/html-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/css-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/javascript-hint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/javascript-lint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/css-lint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/html-lint.min.js"></script>
+  
+  <!-- Linting Engines -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.6/jshint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/csslint/1.0.5/csslint.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/htmlhint/0.11.0/htmlhint.min.js"></script>
+  
+  <!-- JS Beautify -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-css.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-html.min.js"></script>
@@ -130,12 +149,13 @@
       if (!cm.state.completionActive && change.origin === "+input") {
         const c = change.text[0];
         // Trigger on alphanumeric, <, ., /, !, etc. (like VS Code)
-        if (c.match(/[a-zA-Z0-9<.\/\!\[\(:]/)) {
+        if (c.match(/[a-zA-Z0-9<.\/\!\[\(:\-]/)) {
           const cursor = cm.getCursor();
           const token = cm.getTokenAt(cursor);
           // Don't trigger inside strings or comments for JS/CSS
           if (token.type && (token.type.includes("string") || token.type.includes("comment"))) return;
-          CodeMirror.commands.autocomplete(cm, null, { completeSingle: false });
+          // Explicitly call showHint with completeSingle: false so it doesn't auto-insert
+          cm.showHint({ hint: CodeMirror.hint.auto, completeSingle: false });
         }
       }
     }
@@ -156,6 +176,8 @@
         autoCloseTags: true,
         matchBrackets: true,
         styleActiveLine: true,
+        lint: true, // Enable error squigglies
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"], // Show lint markers in gutter
         extraKeys: {
           "Ctrl-Space": "autocomplete",
           "Ctrl-Enter": function() { updatePreview(); },
