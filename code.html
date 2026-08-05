@@ -4,66 +4,94 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="header"><div class="header-inner">
-    <button class="logo-btn" onclick="navigate('./')" id="logo-btn"><span class="logo-badge" id="logo-badge"></span><span class="logo-text" id="logo-text"></span></button>
-    <nav class="nav" role="navigation">
-      <button class="nav-btn" data-route="./" onclick="navigate('./')"><span>Games</span></button>
-      <button class="nav-btn" data-route="apps" onclick="navigate('apps')"><span>Apps</span></button>
-      <button class="nav-btn" data-route="favorites" onclick="navigate('favorites')"><span>Favorites</span><span class="nav-badge hidden" id="fav-count">0</span></button>
-      <button class="nav-btn active" data-route="code" onclick="navigate('code')"><span>Code</span></button>
-    </nav>
-    <div class="spacer-flex"></div>
-    <button class="icon-btn" onclick="toggleTheme()"><svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg></button>
-  </div></header>
+  <header class="header">
+    <div class="header-inner">
+      <button class="logo-btn" onclick="navigate('./')" id="logo-btn" aria-label="Gc Biology home">
+        <span class="logo-badge" id="logo-badge"></span>
+        <span class="logo-text" id="logo-text">Gc Biology</span>
+      </button>
+      <nav class="nav" role="navigation">
+        <button class="nav-btn" data-route="./" onclick="navigate('./')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="11" x2="10" y2="11"></line><line x1="8" y1="9" x2="8" y2="13"></line><line x1="15" y1="12" x2="15.01" y2="12"></line><line x1="18" y1="10" x2="18.01" y2="10"></line><path d="M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.152A4 4 0 0 0 17.32 5z"></path></svg>
+          <span class="nav-label" style="display: inline;">Games</span>
+        </button>
+        <button class="nav-btn" data-route="apps" onclick="navigate('apps')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span class="nav-label" style="display: inline;">Apps</span>
+        </button>
+        <button class="nav-btn" data-route="favorites" onclick="navigate('favorites')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+          <span class="nav-label" style="display: inline;">Favorites</span>
+          <span class="nav-badge hidden" id="fav-count">0</span>
+        </button>
+        <button class="nav-btn active" data-route="code" onclick="navigate('code')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+          <span class="nav-label" style="display: inline;">Code</span>
+        </button>
+      </nav>
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input class="search-input" type="search" id="search" placeholder="Search games…" aria-label="Search games" onkeydown="if(event.key==='Enter') navigate('search?q='+encodeURIComponent(this.value))">
+      </div>
+      <div class="spacer-flex"></div>
+      <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+        <svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+      </button>
+    </div>
+    <div class="mobile-search">
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input class="search-input" type="search" id="search-mobile" placeholder="Search games…" aria-label="Search games" onkeydown="if(event.key==='Enter') navigate('search?q='+encodeURIComponent(this.value))">
+      </div>
+    </div>
+  </header>
 
   <main class="main">
-    <div id="view-code" class="code-wrap">
-      <div class="code-container" id="code-container">
-        <div class="code-toolbar">
-          <div class="code-toolbar-title">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
-            <span class="nav-label" style="display: inline;">Code Editor</span>
-          </div>
-          <div class="code-toolbar-actions">
-            <button class="btn btn-ghost btn-sm" onclick="codeBeautify()" title="Beautify (format HTML, CSS &amp; JS)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2"></path><path d="M15 16v-2"></path><path d="M8 9h2"></path><path d="M20 9h2"></path><path d="M17.8 11.8 19 13"></path><path d="M15 9h.01"></path><path d="M17.8 6.2 19 5"></path><path d="m3 21 9-9"></path><path d="M12.2 6.2 11 5"></path></svg>
-              <span class="nav-label" style="display: inline;">Beautify</span>
-            </button>
-            <button class="btn btn-ghost btn-sm" onclick="codeRun()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-              <span class="nav-label" style="display: inline;">Run</span>
-            </button>
-            <button class="btn btn-ghost btn-sm" onclick="codeReset()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
-              <span class="nav-label" style="display: inline;">Reset</span>
-            </button>
-            <button class="btn btn-ghost btn-sm" onclick="codeNewTab()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
-              <span class="nav-label nav-label-md" style="display: inline;">New tab</span>
-            </button>
-            <div class="code-divider"></div>
-            <button class="btn btn-ghost btn-sm" onclick="codeToggleLayout()" aria-label="Toggle layout">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
-              <span class="nav-label nav-label-md" style="display: inline;">Layout</span>
-            </button>
-            <button class="btn btn-ghost btn-icon" onclick="codeToggleFullscreen()" id="fs-btn" aria-label="Toggle fullscreen">
-              <svg id="fs-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
-            </button>
-          </div>
+    <div class="code-container" id="code-container">
+      <div class="code-toolbar">
+        <div class="code-toolbar-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+          <span class="nav-label" style="display: inline;">Code Editor</span>
         </div>
-        <div class="code-body" id="code-body">
-          <div class="code-editors vertical" id="code-editors">
-            <div class="editor-panel" id="panel-html"><div class="editor-header"><span class="editor-dot" style="background:#e34c26"></span><span class="editor-label">HTML</span></div><div class="editor-host" id="host-html"><textarea id="editor-html" spellcheck="false"></textarea></div></div>
-            <div class="splitter row" data-split="0"></div>
-            <div class="editor-panel" id="panel-css"><div class="editor-header"><span class="editor-dot" style="background:#06b6d4"></span><span class="editor-label">CSS</span></div><div class="editor-host" id="host-css"><textarea id="editor-css" spellcheck="false"></textarea></div></div>
-            <div class="splitter row" data-split="1"></div>
-            <div class="editor-panel" id="panel-js"><div class="editor-header"><span class="editor-dot" style="background:#eab308"></span><span class="editor-label">JS</span></div><div class="editor-host" id="host-js"><textarea id="editor-js" spellcheck="false"></textarea></div></div>
-          </div>
-          <div class="splitter col" id="split-main"></div>
-          <div class="preview-panel" id="preview-panel">
-            <div class="preview-bar"><div class="preview-dots"><span style="background:#f87171"></span><span style="background:#fbbf24"></span><span style="background:#34d399"></span></div><span class="preview-label">Preview</span></div>
-            <iframe class="preview-frame" id="preview-frame" title="Preview" sandbox="allow-scripts allow-modals allow-forms allow-popups allow-same-origin"></iframe>
-          </div>
+        <div class="code-toolbar-actions">
+          <button class="btn btn-ghost btn-sm" onclick="codeBeautify()" title="Beautify (format HTML, CSS &amp; JS)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2"></path><path d="M15 16v-2"></path><path d="M8 9h2"></path><path d="M20 9h2"></path><path d="M17.8 11.8 19 13"></path><path d="M15 9h.01"></path><path d="M17.8 6.2 19 5"></path><path d="m3 21 9-9"></path><path d="M12.2 6.2 11 5"></path></svg>
+            <span class="nav-label" style="display: inline;">Beautify</span>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="codeRun()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+            <span class="nav-label" style="display: inline;">Run</span>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="codeReset()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+            <span class="nav-label" style="display: inline;">Reset</span>
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="codeNewTab()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            <span class="nav-label nav-label-md" style="display: inline;">New tab</span>
+          </button>
+          <div class="code-divider"></div>
+          <button class="btn btn-ghost btn-sm" onclick="codeToggleLayout()" aria-label="Toggle layout">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+            <span class="nav-label nav-label-md" style="display: inline;">Layout</span>
+          </button>
+          <button class="btn btn-ghost btn-icon" onclick="codeToggleFullscreen()" id="fs-btn" aria-label="Toggle fullscreen">
+            <svg id="fs-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+          </button>
+        </div>
+      </div>
+      <div class="code-body" id="code-body">
+        <div class="code-editors vertical" id="code-editors">
+          <div class="editor-panel" id="panel-html"><div class="editor-header"><span class="editor-dot" style="background:#e34c26"></span><span class="editor-label">HTML</span></div><div class="editor-host" id="host-html"><textarea id="editor-html" spellcheck="false"></textarea></div></div>
+          <div class="splitter row" data-split="0"></div>
+          <div class="editor-panel" id="panel-css"><div class="editor-header"><span class="editor-dot" style="background:#06b6d4"></span><span class="editor-label">CSS</span></div><div class="editor-host" id="host-css"><textarea id="editor-css" spellcheck="false"></textarea></div></div>
+          <div class="splitter row" data-split="1"></div>
+          <div class="editor-panel" id="panel-js"><div class="editor-header"><span class="editor-dot" style="background:#eab308"></span><span class="editor-label">JS</span></div><div class="editor-host" id="host-js"><textarea id="editor-js" spellcheck="false"></textarea></div></div>
+        </div>
+        <div class="splitter col" id="split-main"></div>
+        <div class="preview-panel" id="preview-panel">
+          <div class="preview-bar"><div class="preview-dots"><span style="background:#f87171"></span><span style="background:#fbbf24"></span><span style="background:#34d399"></span></div><span class="preview-label">Preview</span></div>
+          <iframe class="preview-frame" id="preview-frame" title="Preview" sandbox="allow-scripts allow-modals allow-forms allow-popups allow-same-origin"></iframe>
         </div>
       </div>
     </div>
@@ -80,14 +108,15 @@
     let editors = { html: null, css: null, js: null };
     let editorSizes = [33.33, 33.33, 33.34]; let mainSizes = [60, 40]; let codeLayout = "vertical";
     
-    function initCodeEditor() {
+    // Wait for ALL scripts to load before initializing CodeMirror
+    window.addEventListener('load', function() {
       if (typeof CodeMirror === 'undefined') {
-        setTimeout(initCodeEditor, 50); // Wait for CodeMirror to load
+        console.error("CodeMirror failed to load");
         return;
       }
-      editors.html = CodeMirror.fromTextArea(document.getElementById('editor-html'), { mode: "htmlmixed", lineNumbers: true });
-      editors.css = CodeMirror.fromTextArea(document.getElementById('editor-css'), { mode: "css", lineNumbers: true });
-      editors.js = CodeMirror.fromTextArea(document.getElementById('editor-js'), { mode: "javascript", lineNumbers: true });
+      editors.html = CodeMirror.fromTextArea(document.getElementById('editor-html'), { mode: "htmlmixed", lineNumbers: true, lineWrapping: true });
+      editors.css = CodeMirror.fromTextArea(document.getElementById('editor-css'), { mode: "css", lineNumbers: true, lineWrapping: true });
+      editors.js = CodeMirror.fromTextArea(document.getElementById('editor-js'), { mode: "javascript", lineNumbers: true, lineWrapping: true });
       
       try {
         const saved = localStorage.getItem(CODE_KEY);
@@ -99,7 +128,7 @@
             editors.js.setValue(p.js || "");
           }
         }
-      } catch {}
+      } catch(e) {}
       
       const onChange = () => {
         const state = { html: editors.html.getValue(), css: editors.css.getValue(), js: editors.js.getValue() };
@@ -109,9 +138,19 @@
       editors.html.on("change", onChange);
       editors.css.on("change", onChange);
       editors.js.on("change", onChange);
+      
       applyEditorSizes(); applyMainSizes(); setupSplitters(); updatePreview();
-    }
+      
+      // Refresh to ensure they render correctly
+      setTimeout(() => {
+        editors.html.refresh();
+        editors.css.refresh();
+        editors.js.refresh();
+      }, 100);
+    });
+
     function updatePreview() {
+      if (!editors.html) return;
       const html = editors.html.getValue();
       const css = editors.css.getValue();
       const js = editors.js.getValue();
@@ -123,10 +162,7 @@
       editors.html.setValue(""); editors.css.setValue(""); editors.js.setValue("");
       updatePreview();
     }
-    function codeBeautify() {
-      // Optional: requires js-beautify library
-      console.log("Beautify clicked");
-    }
+    function codeBeautify() { console.log("Beautify clicked"); }
     function codeNewTab() {
       const html = editors.html.getValue();
       const css = editors.css.getValue();
@@ -144,6 +180,7 @@
       editorsEl.classList.toggle("vertical", codeLayout === "vertical");
       editorsEl.classList.toggle("horizontal", codeLayout === "horizontal");
       document.querySelectorAll("[data-split]").forEach(function(h) { h.classList.toggle("row", codeLayout === "vertical"); h.classList.toggle("col", codeLayout === "horizontal"); });
+      if (editors.html) { editors.html.refresh(); editors.css.refresh(); editors.js.refresh(); }
     }
     function codeToggleFullscreen() {
       const el = document.getElementById("code-container");
@@ -178,7 +215,6 @@
     }
     
     initBase('code');
-    initCodeEditor();
   </script>
 </body>
 </html>
