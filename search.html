@@ -6,12 +6,12 @@
 <body>
   <header class="header">
     <div class="header-inner">
-      <button class="logo-btn" onclick="navigate('index.html')" id="logo-btn"><span class="logo-badge" id="logo-badge"></span><span class="logo-text" id="logo-text"></span></button>
+      <button class="logo-btn" onclick="navigate('./')" id="logo-btn"><span class="logo-badge" id="logo-badge"></span><span class="logo-text" id="logo-text"></span></button>
       <nav class="nav" role="navigation">
-        <button class="nav-btn" data-route="index.html" onclick="navigate('index.html')"><span>Games</span></button>
-        <button class="nav-btn" data-route="apps.html" onclick="navigate('apps.html')"><span>Apps</span></button>
-        <button class="nav-btn" data-route="favorites.html" onclick="navigate('favorites.html')"><span>Favorites</span><span class="nav-badge hidden" id="fav-count">0</span></button>
-        <button class="nav-btn" data-route="code.html" onclick="navigate('code.html')"><span>Code</span></button>
+        <button class="nav-btn" data-route="./" onclick="navigate('./')"><span>Games</span></button>
+        <button class="nav-btn" data-route="apps" onclick="navigate('apps')"><span>Apps</span></button>
+        <button class="nav-btn" data-route="favorites" onclick="navigate('favorites')"><span>Favorites</span><span class="nav-badge hidden" id="fav-count">0</span></button>
+        <button class="nav-btn" data-route="code" onclick="navigate('code')"><span>Code</span></button>
       </nav>
       <div class="search-wrap">
         <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -35,17 +35,17 @@
       const filtered = searchGames(q, cat);
       let html = `<div class="grid-header"><div><h2>${q ? 'Results for "' + escapeHtml(q) + '"' : 'All Games'}</h2><p>${filtered.length} found</p></div>`;
       html += '<div class="chips">';
-      ["All"].concat(GENRES).forEach(o => html += `<button class="chip ${o===cat?'active':''}" onclick="navigate('search.html?cat=${encodeURIComponent(o)}')">${escapeHtml(o)}</button>`);
+      ["All"].concat(GENRES).forEach(o => html += `<button class="chip ${o===cat?'active':''}" onclick="navigate('search?cat=${encodeURIComponent(o)}')">${escapeHtml(o)}</button>`);
       html += '</div></div>';
       if (filtered.length === 0) html += '<div class="empty"><h3>No games found</h3><p>Try a different search term or genre.</p></div>';
       else { html += '<div class="game-grid">'; filtered.forEach(g => html += renderCard(g, 'game')); html += '</div>'; }
       document.getElementById("view-search").innerHTML = html;
     }
     document.getElementById('search-box').addEventListener('input', function(e) {
-      history.replaceState({}, "", `search.html?q=${encodeURIComponent(e.target.value)}`);
+      history.replaceState({}, "", `search?q=${encodeURIComponent(e.target.value)}`);
       renderCurrentView();
     });
-    initBase('search.html');
+    initBase('search');
     renderCurrentView();
   </script>
 </body>
