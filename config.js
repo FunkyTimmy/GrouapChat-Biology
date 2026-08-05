@@ -3,31 +3,21 @@ const SITE = {
   tagline: "Study With the GC",
   logo: "https://cdn.jsdelivr.net/gh/FunkyTimmy/GrouapChat-Biology@main/images/Gc%20Biology%20Logo.png",
   favicon: "https://cdn.jsdelivr.net/gh/FunkyTimmy/GrouapChat-Biology@main/images/Gc%20Biology%20Logo.png", 
-  titleSuffix: " - GC Biology" // Text immediately after the game/page name
+  titleSuffix: " - GC Biology"
 };
 
-const GENRES = [
-  "Arcade",
-  "Puzzle",
-  "Strategy",
-  "Action",
-  "Adventure",
-  "Racing",
-];
+const GENRES = ["Arcade", "Puzzle", "Strategy", "Action", "Adventure", "Racing"];
 
 const GAMES = [
-  // COOKIE CLICKER
   {
     id: "cookieclicker",
     name: "Cookie Clicker",
-    description: "Click the cookie to get more cookies and the cycle repeats.",
+    description: "Click the cookie to get more cookies and the cycle repeats. Keep upgrading your cursors and farms to build an empire of baked goods.",
     genre: "Arcade",
     thumbnail: "/images/cookieclicker.jpg",
     fileUrl: "/games/cookieclicker.html",
     popular: false,
   },
-  
-  // MINECRAFT 1.12.2
   {
     id: "minecraft12",
     name: "Minecraft 1.12.2",
@@ -37,8 +27,6 @@ const GAMES = [
     fileUrl: "/games/minecraft1-12-2.html",
     popular: true,
   },
-  
-  // ESCAPE ROAD
   {
     id: "escaperoad",
     name: "Escape Road",
@@ -48,8 +36,6 @@ const GAMES = [
     fileUrl: "/games/escaperoad.html",
     popular: false,
   },
-  
-  // GEOMETRY DASH LITE
   {
     id: "gdlite",
     name: "Geometry Dash Lite",
@@ -58,16 +44,15 @@ const GAMES = [
     thumbnail: "/images/gdlite.jpg",
     fileUrl: "/games/gdlite.html",
     popular: false,
-  },
+  }
 ];
 
-// NEW: Add your web apps here
 const APPS = [
-  // {
-  //   id: "desmos",
-  //   name: "Desmos Graphing",
-  //   description: "An online graphing calculator for math and science.",
-  //   thumbnail: "https://cdn.jsdelivr.net/gh/FunkyTimmy/little-timmy-codepen@main/desmos.png",
-  //   fileUrl: "/apps/desmos.html"
-  // },
+  {
+    id: "desmos",
+    name: "Desmos Graphing",
+    description: "An online graphing calculator for math and science.",
+    thumbnail: "https://cdn.jsdelivr.net/gh/FunkyTimmy/little-timmy-codepen@main/desmos.png",
+    fileUrl: "/apps/desmos.html"
+  }
 ];
