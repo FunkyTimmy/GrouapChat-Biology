@@ -2,13 +2,52 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Code Editor</title>
   <link rel="stylesheet" href="style.css">
-  
+
   <!-- CodeMirror Core & Dracula Theme -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
   <!-- Hint & Lint CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.css">
+
+  <!-- Upload / Download / Drag-drop styles -->
+  <style>
+    .code-body { position: relative; }
+    .code-body.drag-over::after {
+      content: 'Drop file to load';
+      position: absolute;
+      inset: 0;
+      border: 3px dashed #10b981;
+      border-radius: 12px;
+      background: rgba(16, 185, 129, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 600;
+      color: #10b981;
+      z-index: 1000;
+      pointer-events: none;
+    }
+    #toast {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #10b981;
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 8px;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+    #toast.show { opacity: 1; }
+  </style>
 </head>
 <body>
   <header class="header">
@@ -61,6 +100,16 @@
           <span class="nav-label" style="display: inline;">Code Editor</span>
         </div>
         <div class="code-toolbar-actions">
+          <!-- Upload button -->
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('file-input').click()" title="Upload file (.html, .css, .js)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <span class="nav-label nav-label-md" style="display: inline;">Upload</span>
+          </button>
+          <!-- Download button -->
+          <button class="btn btn-ghost btn-sm" onclick="codeDownload()" title="Download as HTML file">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span class="nav-label nav-label-md" style="display: inline;">Download</span>
+          </button>
           <button class="btn btn-ghost btn-sm" onclick="codeBeautify()" title="Beautify (format HTML, CSS &amp; JS)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4V2"></path><path d="M15 16v-2"></path><path d="M8 9h2"></path><path d="M20 9h2"></path><path d="M17.8 11.8 19 13"></path><path d="M15 9h.01"></path><path d="M17.8 6.2 19 5"></path><path d="m3 21 9-9"></path><path d="M12.2 6.2 11 5"></path></svg>
             <span class="nav-label" style="display: inline;">Beautify</span>
@@ -102,6 +151,8 @@
         </div>
       </div>
     </div>
+    <!-- Hidden file input for upload -->
+    <input type="file" id="file-input" accept=".html,.htm,.css,.js,.txt" multiple style="display:none;">
   </main>
 
   <footer class="footer">
@@ -116,27 +167,27 @@
 
   <script src="config.js"></script>
   <script src="app.js"></script>
-  
+
   <!-- CodeMirror Core & Modes -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
-  
+
   <!-- CodeMirror Addons (Auto-complete, UI, Linting) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
-  
+
   <!-- Hint Addons (Crucial: xml-hint is required for html-hint) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/xml-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/html-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/css-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/javascript-hint.min.js"></script>
-  
+
   <!-- Linting Addons & Engines -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/javascript-lint.min.js"></script>
@@ -145,7 +196,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.6/jshint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/csslint/1.0.5/csslint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/htmlhint/0.11.0/htmlhint.min.js"></script>
-  
+
   <!-- JS Beautify -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-css.min.js"></script>
@@ -156,10 +207,10 @@
     initBase('code');
 
     let editors = { html: null, css: null, js: null };
-    let editorSizes = [33.33, 33.33, 33.34]; 
-    let mainSizes = [60, 40]; 
+    let editorSizes = [33.33, 33.33, 33.34];
+    let mainSizes = [60, 40];
     let codeLayout = "vertical";
-    
+
     // VS Code-like Auto-complete Trigger
     function triggerAutoComplete(cm, change) {
       if (!cm.state.completionActive && change.origin === "+input") {
@@ -175,13 +226,27 @@
         }
       }
     }
-    
+
+    // ===== Toast notification helper =====
+    function showToast(message) {
+      let toast = document.getElementById('toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(function() { toast.classList.remove('show'); }, 2500);
+    }
+
     window.addEventListener('load', function() {
       if (typeof CodeMirror === 'undefined') {
         console.error("CodeMirror failed to load");
         return;
       }
-      
+
       const commonOpts = {
         theme: "dracula",
         lineNumbers: true,
@@ -206,11 +271,11 @@
       editors.html = CodeMirror.fromTextArea(document.getElementById('editor-html'), { ...commonOpts, mode: "htmlmixed" });
       editors.css = CodeMirror.fromTextArea(document.getElementById('editor-css'), { ...commonOpts, mode: "css" });
       editors.js = CodeMirror.fromTextArea(document.getElementById('editor-js'), { ...commonOpts, mode: "javascript" });
-      
+
       editors.html.on("inputRead", triggerAutoComplete);
       editors.css.on("inputRead", triggerAutoComplete);
       editors.js.on("inputRead", triggerAutoComplete);
-      
+
       try {
         const saved = localStorage.getItem(CODE_KEY);
         if (saved) {
@@ -226,7 +291,7 @@
           editors.js.setValue(DEFAULT_CODE.js);
         }
       } catch(e) {}
-      
+
       const onChange = () => {
         saveCodeState();
         updatePreview();
@@ -234,12 +299,13 @@
       editors.html.on("change", onChange);
       editors.css.on("change", onChange);
       editors.js.on("change", onChange);
-      
-      applyEditorSizes(); 
-      applyMainSizes(); 
-      setupSplitters(); 
+
+      applyEditorSizes();
+      applyMainSizes();
+      setupSplitters();
+      setupDragDrop();
       updatePreview();
-      
+
       setTimeout(() => {
         editors.html.refresh();
         editors.css.refresh();
@@ -287,14 +353,203 @@
       const newWin = window.open('about:blank', '_blank');
       if (newWin) { newWin.document.write(doc); newWin.document.close(); }
     }
+
+    // ===== Download (export combined HTML) =====
+    function codeDownload() {
+      if (!editors.html) return;
+      const html = editors.html.getValue();
+      const css = editors.css.getValue();
+      const js = editors.js.getValue();
+      const doc = '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <style>\n' + css + '\n  </style>\n</head>\n<body>\n' + html + '\n  <script>\ntry {\n' + js + '\n} catch(e) { console.error(e); }\n  <\/script>\n</body>\n</html>';
+      const blob = new Blob([doc], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'project.html';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Downloaded: project.html');
+    }
+
+    // ===== Upload: file input handler =====
+    function handleFileUpload(event) {
+      if (!editors.html) {
+        showToast('Editor not ready yet, please wait…');
+        event.target.value = '';
+        return;
+      }
+      const files = event.target.files;
+      if (!files || files.length === 0) return;
+
+      Array.from(files).forEach(function(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          loadFileContent(file.name, e.target.result);
+          saveCodeState();
+          updatePreview();
+        };
+        reader.onerror = function() {
+          showToast('Failed to read: ' + file.name);
+        };
+        reader.readAsText(file);
+      });
+
+      event.target.value = '';
+    }
+
+    // ===== Load file content into the appropriate editor(s) =====
+    function loadFileContent(fileName, content) {
+      const name = fileName.toLowerCase();
+      const ext = name.split('.').pop();
+
+      if (ext === 'css') {
+        editors.css.setValue(content);
+        showToast('CSS loaded: ' + fileName);
+      } else if (ext === 'js') {
+        editors.js.setValue(content);
+        showToast('JS loaded: ' + fileName);
+      } else if (ext === 'html' || ext === 'htm') {
+        parseCombinedHTML(content);
+        showToast('HTML loaded: ' + fileName);
+      } else if (ext === 'txt') {
+        // Try to detect if it's HTML
+        if (content.trim().startsWith('<') || content.includes('<!DOCTYPE') || content.includes('<html')) {
+          parseCombinedHTML(content);
+          showToast('HTML loaded: ' + fileName);
+        } else {
+          editors.html.setValue(content);
+          showToast('Text loaded: ' + fileName);
+        }
+      } else {
+        // Unknown extension — try to detect content type
+        if (content.includes('<html') || content.includes('<!DOCTYPE') || content.includes('<body')) {
+          parseCombinedHTML(content);
+        } else if (content.includes('{') && content.includes('}') && !content.includes('<')) {
+          editors.css.setValue(content);
+        } else if (content.includes('function') || content.includes('var ') || content.includes('const ') || content.includes('let ')) {
+          editors.js.setValue(content);
+        } else {
+          editors.html.setValue(content);
+        }
+        showToast('File loaded: ' + fileName);
+      }
+    }
+
+    // ===== Parse a combined HTML file and split into HTML / CSS / JS editors =====
+    function parseCombinedHTML(htmlContent) {
+      try {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(htmlContent, 'text/html');
+
+        let cssContent = '';
+        let jsContent = '';
+
+        // Extract external stylesheet references (as comments)
+        const linkTags = doc.querySelectorAll('link[rel="stylesheet"]');
+        linkTags.forEach(function(link) {
+          cssContent += '/* External stylesheet: ' + link.getAttribute('href') + ' */\n';
+          link.remove();
+        });
+
+        // Extract inline CSS from <style> tags
+        const styleTags = doc.querySelectorAll('style');
+        styleTags.forEach(function(style) {
+          cssContent += style.textContent + '\n';
+          style.remove();
+        });
+
+        // Extract external script references (as comments)
+        const externalScripts = doc.querySelectorAll('script[src]');
+        externalScripts.forEach(function(script) {
+          jsContent += '// External script: ' + script.getAttribute('src') + '\n';
+          script.remove();
+        });
+
+        // Extract inline JS from remaining <script> tags
+        const inlineScripts = doc.querySelectorAll('script');
+        inlineScripts.forEach(function(script) {
+          jsContent += script.textContent + '\n';
+          script.remove();
+        });
+
+        // Get remaining body content as the HTML
+        const bodyContent = doc.body ? doc.body.innerHTML : '';
+
+        editors.html.setValue(bodyContent.trim());
+        editors.css.setValue(cssContent.trim());
+        editors.js.setValue(jsContent.trim());
+      } catch(e) {
+        console.error('Failed to parse HTML:', e);
+        editors.html.setValue(htmlContent);
+      }
+    }
+
+    // ===== Drag-and-drop support =====
+    function setupDragDrop() {
+      const codeBody = document.getElementById('code-body');
+      if (!codeBody) return;
+
+      let dragCounter = 0;
+
+      codeBody.addEventListener('dragenter', function(e) {
+        if (e.dataTransfer && e.dataTransfer.types && e.dataTransfer.types.includes('Files')) {
+          e.preventDefault();
+          dragCounter++;
+          codeBody.classList.add('drag-over');
+        }
+      });
+
+      codeBody.addEventListener('dragover', function(e) {
+        if (e.dataTransfer && e.dataTransfer.types && e.dataTransfer.types.includes('Files')) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'copy';
+        }
+      });
+
+      codeBody.addEventListener('dragleave', function(e) {
+        if (e.dataTransfer && e.dataTransfer.types && e.dataTransfer.types.includes('Files')) {
+          dragCounter--;
+          if (dragCounter <= 0) {
+            dragCounter = 0;
+            codeBody.classList.remove('drag-over');
+          }
+        }
+      });
+
+      codeBody.addEventListener('drop', function(e) {
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          e.preventDefault();
+          dragCounter = 0;
+          codeBody.classList.remove('drag-over');
+
+          if (!editors.html) {
+            showToast('Editor not ready yet, please wait…');
+            return;
+          }
+
+          Array.from(e.dataTransfer.files).forEach(function(file) {
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+              loadFileContent(file.name, ev.target.result);
+              saveCodeState();
+              updatePreview();
+            };
+            reader.readAsText(file);
+          });
+        }
+      });
+    }
+
     function codeToggleLayout() {
       codeLayout = codeLayout === "vertical" ? "horizontal" : "vertical";
       const editorsEl = document.getElementById("code-editors");
       editorsEl.classList.toggle("vertical", codeLayout === "vertical");
       editorsEl.classList.toggle("horizontal", codeLayout === "horizontal");
-      document.querySelectorAll("[data-split]").forEach(function(h) { 
-        h.classList.toggle("row", codeLayout === "vertical"); 
-        h.classList.toggle("col", codeLayout === "horizontal"); 
+      document.querySelectorAll("[data-split]").forEach(function(h) {
+        h.classList.toggle("row", codeLayout === "vertical");
+        h.classList.toggle("col", codeLayout === "horizontal");
       });
       if (editors.html) { editors.html.refresh(); editors.css.refresh(); editors.js.refresh(); }
     }
@@ -303,18 +558,18 @@
       if (document.fullscreenElement) document.exitFullscreen();
       else el.requestFullscreen();
     }
-    function applyEditorSizes() { 
-      const ids = ["panel-html", "panel-css", "panel-js"]; 
-      ids.forEach(function(id, i) { 
-        const el = document.getElementById(id); 
-        if (el) el.style.flex = "0 0 " + editorSizes[i] + "%"; 
-      }); 
+    function applyEditorSizes() {
+      const ids = ["panel-html", "panel-css", "panel-js"];
+      ids.forEach(function(id, i) {
+        const el = document.getElementById(id);
+        if (el) el.style.flex = "0 0 " + editorSizes[i] + "%";
+      });
     }
-    function applyMainSizes() { 
-      const e = document.getElementById("code-editors"); 
-      const p = document.getElementById("preview-panel"); 
-      if (e) e.style.flex = "0 0 " + mainSizes[0] + "%"; 
-      if (p) p.style.flex = "0 0 " + mainSizes[1] + "%"; 
+    function applyMainSizes() {
+      const e = document.getElementById("code-editors");
+      const p = document.getElementById("preview-panel");
+      if (e) e.style.flex = "0 0 " + mainSizes[0] + "%";
+      if (p) p.style.flex = "0 0 " + mainSizes[1] + "%";
     }
     function setupSplitters() {
       document.querySelectorAll("[data-split]").forEach(function(handle) {
@@ -336,13 +591,13 @@
           if (np < 0) { nn += np; np = 0; } if (nn < 0) { np += nn; nn = 0; } if (np > sum) { np = sum; nn = 0; } if (nn > sum) { nn = sum; np = 0; }
           applyFn(np, nn);
         };
-        var onUp = function() { 
-          document.removeEventListener("mousemove", onMove); 
-          document.removeEventListener("mouseup", onUp); 
-          document.body.style.userSelect = ""; 
-          document.body.style.cursor = ""; 
-          iframes.forEach(function(f) { f.style.pointerEvents = ""; }); 
-          handle.classList.remove("dragging"); 
+        var onUp = function() {
+          document.removeEventListener("mousemove", onMove);
+          document.removeEventListener("mouseup", onUp);
+          document.body.style.userSelect = "";
+          document.body.style.cursor = "";
+          iframes.forEach(function(f) { f.style.pointerEvents = ""; });
+          handle.classList.remove("dragging");
         };
         document.addEventListener("mousemove", onMove); document.addEventListener("mouseup", onUp);
       });
