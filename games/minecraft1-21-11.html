@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<button class="fullscreen-button" onclick="openMinecraft()">Load Minecraft</button>
+
+<style>
+  html,
+  body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-image: url("https://cdn.jsdelivr.net/gh/FunkyTimmy/little-timmy-codepen@main/minecraft-thmbnail.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .fullscreen-button {
+    display: inline-block;
+    padding: 8px 20px;
+    background-color: #000000;
+    color: #ffffff !important;
+    border: 2px solid #FFF;
+    border-radius: 10px;
+    font-family: Cursive, cursive;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none !important;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+  }
+
+  .fullscreen-button:hover {
+    background-color: #083B00 !important;
+  }
+</style>
+
+<script>
+  function openMinecraft() {
+    const newTab = window.open('about:blank', '_blank');
+    const doc = newTab.document;
+    doc.write(`
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Screen Iframe</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        iframe {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <iframe src="/games/Eaglercraft_1.21.11_WASM_Offline_Download%20(7)%20(1).html/" allowfullscreen></iframe>
+</body>
+</html>
+    `);
+    doc.close();
+  }
+</script>
+</html>
