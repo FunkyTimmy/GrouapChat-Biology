@@ -28,12 +28,12 @@ const GAMES = [
     popular: true,
   },
   {
-    id: "minecraft21",
-    name: "Minecraft 1.21",
-    description: "VERY BUGGY! THIS GAME IS STILL IN DEVELOPMENT, EXPECT ERRORS CONSTANTLY. Eaglercraft 1.21. As similar to Minecraft 1.21 as possible.",
+    id: "minecraft2111",
+    name: "Minecraft 1.21.11",
+    description: "VERY BUGGY! THIS GAME IS STILL IN DEVELOPMENT, EXPECT ERRORS CONSTANTLY. Eaglercraft 1.21.11. As similar to Minecraft 1.21.11 as possible.",
     genre: "Sandbox",
     thumbnail: "images/wp8691241-minecraft-thumbnail-wallpapers.jpg",
-    fileUrl: "games/Eaglercraft_1.21.11_WASM_Offline_Download%20(7)%20(1).html",
+    fileUrl: "games/minecraft1-21-11.html",
     popular: false,
   },
   {
