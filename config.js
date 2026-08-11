@@ -6,7 +6,7 @@ const SITE = {
   titleSuffix: " - GC Biology"
 };
 
-const GENRES = ["Arcade", "Puzzle", "Strategy", "Action", "Adventure", "Racing"];
+const GENRES = ["Arcade", "Puzzle", "Strategy", "Action", "Adventure", "Racing", "Sandbox"];
 
 const GAMES = [
   {
@@ -22,10 +22,19 @@ const GAMES = [
     id: "minecraft12",
     name: "Minecraft 1.12.2",
     description: "Eaglercraft 1.12.2. As similar to Minecraft 1.12.2 as possible. Join xenaMC on multiplayer!",
-    genre: "Arcade",
+    genre: "Sandbox",
     thumbnail: "images/wp8691241-minecraft-thumbnail-wallpapers.jpg",
     fileUrl: "games/minecraft1-12-2.html",
     popular: true,
+  },
+  {
+    id: "minecraft21",
+    name: "Minecraft 1.21",
+    description: "VERY BUGGY! THIS GAME IS STILL IN DEVELOPMENT, EXPECT ERRORS CONSTANTLY. Eaglercraft 1.21. As similar to Minecraft 1.21 as possible.",
+    genre: "Sandbox",
+    thumbnail: "images/wp8691241-minecraft-thumbnail-wallpapers.jpg",
+    fileUrl: "games/Eaglercraft_1.21.11_WASM_Offline_Download%20(7)%20(1).html",
+    popular: false,
   },
   {
     id: "escaperoad",
