@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.css">
 
-  <!-- Upload / Download / Drag-drop styles -->
+  <!-- Upload / Download / Drag-drop / Loading styles -->
   <style>
     .code-body { position: relative; }
     .code-body.drag-over::after {
@@ -29,6 +29,8 @@
       z-index: 1000;
       pointer-events: none;
     }
+    
+    /* Toast Notifications */
     #toast {
       position: fixed;
       bottom: 80px;
@@ -47,9 +49,51 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
     #toast.show { opacity: 1; }
+
+    /* Loading Screen */
+    .loading-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.85); /* dark slate transparent */
+      backdrop-filter: blur(4px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9998;
+      color: #fff;
+      font-family: system-ui, sans-serif;
+    }
+    .loading-overlay.active { display: flex; }
+    
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #10b981;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 20px;
+    }
+    
+    .loading-text {
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
+  <!-- Loading Screen Element -->
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">Uploading & Parsing File...</div>
+  </div>
+
   <header class="header">
     <div class="header-inner">
       <button class="logo-btn" onclick="navigate('./')" id="logo-btn" aria-label="Gc Biology home">
@@ -100,7 +144,7 @@
           <span class="nav-label" style="display: inline;">Code Editor</span>
         </div>
         <div class="code-toolbar-actions">
-          <!-- Upload button -->
+          <!-- Upload button (Fix: triggers input click) -->
           <button class="btn btn-ghost btn-sm" onclick="document.getElementById('file-input').click()" title="Upload file (.html, .css, .js)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
             <span class="nav-label nav-label-md" style="display: inline;">Upload</span>
@@ -151,8 +195,8 @@
         </div>
       </div>
     </div>
-    <!-- Hidden file input for upload -->
-    <input type="file" id="file-input" accept=".html,.htm,.css,.js,.txt" multiple style="display:none;">
+    <!-- Hidden file input with onchange listener -->
+    <input type="file" id="file-input" accept=".html,.htm,.css,.js,.txt" multiple style="display:none;" onchange="handleFileUpload(event)">
   </main>
 
   <footer class="footer">
@@ -215,16 +259,23 @@
     function triggerAutoComplete(cm, change) {
       if (!cm.state.completionActive && change.origin === "+input") {
         const c = change.text[0];
-        // Trigger on alphanumeric, <, ., /, !, etc. (like VS Code)
         if (c.match(/[a-zA-Z0-9<.\/\!\[\(:\-]/)) {
           const cursor = cm.getCursor();
           const token = cm.getTokenAt(cursor);
-          // Don't trigger inside strings or comments for JS/CSS
           if (token.type && (token.type.includes("string") || token.type.includes("comment"))) return;
-          // Explicitly call autocomplete
           CodeMirror.commands.autocomplete(cm, null, { completeSingle: false });
         }
       }
+    }
+    
+    // ===== Loading Screen Helpers =====
+    function showLoading() {
+      const overlay = document.getElementById('loading-overlay');
+      if (overlay) overlay.classList.add('active');
+    }
+    function hideLoading() {
+      const overlay = document.getElementById('loading-overlay');
+      if (overlay) overlay.classList.remove('active');
     }
 
     // ===== Toast notification helper =====
@@ -257,8 +308,8 @@
         autoCloseTags: true,
         matchBrackets: true,
         styleActiveLine: true,
-        lint: true, // Enable error squigglies
-        gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"], // Show lint markers in gutter
+        lint: true,
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers"],
         extraKeys: {
           "Ctrl-Space": "autocomplete",
           "Ctrl-Enter": function() { updatePreview(); },
@@ -327,12 +378,15 @@
       const doc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>${css}</style></head><body>${html}<script>try{${js}}catch(e){console.error(e)}<\/script></body></html>`;
       document.getElementById('preview-frame').srcdoc = doc;
     }
+    
     function codeRun() { updatePreview(); }
+    
     function codeReset() {
       if (!editors.html) return;
       editors.html.setValue(""); editors.css.setValue(""); editors.js.setValue("");
       saveCodeState(); updatePreview();
     }
+    
     function codeBeautify() {
       if (!editors.html) return;
       if (typeof html_beautify !== 'undefined') {
@@ -344,6 +398,7 @@
         alert("Beautify library failed to load.");
       }
     }
+    
     function codeNewTab() {
       if (!editors.html) return;
       const html = editors.html.getValue();
@@ -383,20 +438,39 @@
       const files = event.target.files;
       if (!files || files.length === 0) return;
 
+      showLoading(); // Show loading screen
+      let filesProcessed = 0;
+      const totalFiles = files.length;
+
       Array.from(files).forEach(function(file) {
         const reader = new FileReader();
         reader.onload = function(e) {
           loadFileContent(file.name, e.target.result);
-          saveCodeState();
-          updatePreview();
+          filesProcessed++;
+          if (filesProcessed === totalFiles) {
+            // All files have been read
+            saveCodeState();
+            updatePreview();
+            
+            // Refresh editors to ensure UI updates properly
+            editors.html.refresh();
+            editors.css.refresh();
+            editors.js.refresh();
+            
+            hideLoading(); // Hide loading screen
+          }
         };
         reader.onerror = function() {
           showToast('Failed to read: ' + file.name);
+          filesProcessed++;
+          if (filesProcessed === totalFiles) {
+            hideLoading();
+          }
         };
         reader.readAsText(file);
       });
 
-      event.target.value = '';
+      event.target.value = ''; // Reset input
     }
 
     // ===== Load file content into the appropriate editor(s) =====
@@ -414,7 +488,6 @@
         parseCombinedHTML(content);
         showToast('HTML loaded: ' + fileName);
       } else if (ext === 'txt') {
-        // Try to detect if it's HTML
         if (content.trim().startsWith('<') || content.includes('<!DOCTYPE') || content.includes('<html')) {
           parseCombinedHTML(content);
           showToast('HTML loaded: ' + fileName);
@@ -529,12 +602,23 @@
             return;
           }
 
+          showLoading(); // Show loading screen on drop
+          let filesProcessed = 0;
+          const totalFiles = e.dataTransfer.files.length;
+
           Array.from(e.dataTransfer.files).forEach(function(file) {
             const reader = new FileReader();
             reader.onload = function(ev) {
               loadFileContent(file.name, ev.target.result);
-              saveCodeState();
-              updatePreview();
+              filesProcessed++;
+              if (filesProcessed === totalFiles) {
+                saveCodeState();
+                updatePreview();
+                editors.html.refresh();
+                editors.css.refresh();
+                editors.js.refresh();
+                hideLoading(); // Hide loading screen
+              }
             };
             reader.readAsText(file);
           });
@@ -553,11 +637,13 @@
       });
       if (editors.html) { editors.html.refresh(); editors.css.refresh(); editors.js.refresh(); }
     }
+    
     function codeToggleFullscreen() {
       const el = document.getElementById("code-container");
       if (document.fullscreenElement) document.exitFullscreen();
       else el.requestFullscreen();
     }
+    
     function applyEditorSizes() {
       const ids = ["panel-html", "panel-css", "panel-js"];
       ids.forEach(function(id, i) {
@@ -565,12 +651,14 @@
         if (el) el.style.flex = "0 0 " + editorSizes[i] + "%";
       });
     }
+    
     function applyMainSizes() {
       const e = document.getElementById("code-editors");
       const p = document.getElementById("preview-panel");
       if (e) e.style.flex = "0 0 " + mainSizes[0] + "%";
       if (p) p.style.flex = "0 0 " + mainSizes[1] + "%";
     }
+    
     function setupSplitters() {
       document.querySelectorAll("[data-split]").forEach(function(handle) {
         const index = parseInt(handle.getAttribute("data-split"), 10);
@@ -578,6 +666,7 @@
       });
       makeSplitter(document.getElementById("split-main"), function() { return "x"; }, function() { return { prev: mainSizes[0], next: mainSizes[1], container: document.getElementById("code-body") }; }, function(np, nn) { mainSizes[0] = np; mainSizes[1] = nn; applyMainSizes(); });
     }
+    
     function makeSplitter(handle, axisFn, stateFn, applyFn) {
       handle.addEventListener("mousedown", function(e) {
         e.preventDefault(); const axis = axisFn(); const state = stateFn(); const rect = state.container.getBoundingClientRect();
