@@ -10,9 +10,23 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.css">
 
-  <!-- Upload / Download / Drag-drop / Loading styles -->
+  <!-- Custom Styles for Uploads, Modal, Loading, and Scrolling -->
   <style>
-    .code-body { position: relative; }
+    /* Fix CodeMirror layout to scroll within its container */
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    .main { display: flex; flex-direction: column; height: calc(100vh - 100px); /* Adjust based on header/footer */ overflow: hidden; }
+    .code-container { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    .code-body { display: flex; flex: 1; min-height: 0; overflow: hidden; position: relative; }
+    .code-editors { display: flex; flex: 1; min-height: 0; min-width: 0; }
+    .code-editors.vertical { flex-direction: column; }
+    .code-editors.horizontal { flex-direction: row; }
+    .editor-panel { display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden; }
+    .editor-host { flex: 1; min-height: 0; min-width: 0; overflow: hidden; display: flex; }
+    .CodeMirror { height: 100% !important; width: 100% !important; }
+    .preview-panel { display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden; }
+    .preview-frame { flex: 1; height: 100%; border: none; }
+
+    /* Drag & Drop Overlay */
     .code-body.drag-over::after {
       content: 'Drop file to load';
       position: absolute;
@@ -50,17 +64,17 @@
     }
     #toast.show { opacity: 1; }
 
-    /* Loading Screen */
+    /* Loading Screen with Progress Bar */
     .loading-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.85); /* dark slate transparent */
-      backdrop-filter: blur(4px);
+      background: rgba(15, 23, 42, 0.9);
+      backdrop-filter: blur(6px);
       display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 9998;
+      z-index: 10000;
       color: #fff;
       font-family: system-ui, sans-serif;
     }
@@ -80,18 +94,162 @@
       font-size: 18px;
       font-weight: 500;
       letter-spacing: 0.5px;
+      margin-bottom: 15px;
+    }
+
+    .progress-container {
+      width: 300px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background: #10b981;
+      width: 0%;
+      transition: width 0.2s ease;
+      border-radius: 8px;
+    }
+
+    .progress-stats {
+      font-size: 14px;
+      color: #cbd5e1;
     }
 
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+
+    /* Upload Settings Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 10001;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-content {
+      background: #1e293b;
+      color: #f8fafc;
+      padding: 24px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 480px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3), 0 10px 10px -5px rgba(0,0,0,0.2);
+      border: 1px solid #334155;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .modal-option {
+      margin-bottom: 16px;
+    }
+    .modal-option label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-bottom: 4px;
+    }
+    .modal-option p {
+      font-size: 12px;
+      color: #94a3b8;
+      margin: 0;
+      padding-left: 24px;
+    }
+    .modal-option input[type="number"] {
+      width: 80px;
+      padding: 6px;
+      background: #0f172a;
+      border: 1px solid #475569;
+      color: #fff;
+      border-radius: 6px;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 24px;
+    }
+    .btn-primary {
+      background: #10b981;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: #059669; }
+    .btn-secondary {
+      background: transparent;
+      color: #cbd5e1;
+      border: 1px solid #475569;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: #334155; }
   </style>
 </head>
 <body>
   <!-- Loading Screen Element -->
   <div id="loading-overlay" class="loading-overlay">
     <div class="spinner"></div>
-    <div class="loading-text">Uploading & Parsing File...</div>
+    <div class="loading-text" id="loading-text">Uploading & Parsing File...</div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div class="progress-stats" id="progress-stats">0.00 MB / 0.00 MB (0%)</div>
+  </div>
+
+  <!-- Upload Settings Modal -->
+  <div id="upload-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        Upload Settings
+      </div>
+      <div class="modal-option">
+        <label>
+          <input type="checkbox" id="setting-autosplit" checked>
+          Auto-split HTML/CSS/JS
+        </label>
+        <p>If checked, uploaded <code>.html</code> files are automatically split into the HTML, CSS, and JS editors. If unchecked, the entire content is placed in the HTML editor.</p>
+      </div>
+      <div class="modal-option">
+        <label>
+          <input type="checkbox" id="setting-beautify">
+          Beautify code after upload
+        </label>
+        <p>Runs the code formatter on the uploaded files immediately after loading.</p>
+      </div>
+      <div class="modal-option">
+        <label>
+          Parse delay (ms):
+          <input type="number" id="setting-delay" value="0" min="0" max="5000" step="50">
+        </label>
+        <p>Adds a delay between parsing files. Increase this value if your browser freezes or shows an "Unresponsive script" warning when uploading large files.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeUploadModal()">Cancel</button>
+        <button class="btn-primary" onclick="triggerFileInput()">Select Files</button>
+      </div>
+    </div>
   </div>
 
   <header class="header">
@@ -144,8 +302,8 @@
           <span class="nav-label" style="display: inline;">Code Editor</span>
         </div>
         <div class="code-toolbar-actions">
-          <!-- Upload button (Fix: triggers input click) -->
-          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('file-input').click()" title="Upload file (.html, .css, .js)">
+          <!-- Upload button (Opens Settings Modal) -->
+          <button class="btn btn-ghost btn-sm" onclick="openUploadModal()" title="Upload file (.html, .css, .js)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
             <span class="nav-label nav-label-md" style="display: inline;">Upload</span>
           </button>
@@ -195,7 +353,7 @@
         </div>
       </div>
     </div>
-    <!-- Hidden file input with onchange listener -->
+    <!-- Hidden file input -->
     <input type="file" id="file-input" accept=".html,.htm,.css,.js,.txt" multiple style="display:none;" onchange="handleFileUpload(event)">
   </main>
 
@@ -225,7 +383,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/selection/active-line.min.js"></script>
 
-  <!-- Hint Addons (Crucial: xml-hint is required for html-hint) -->
+  <!-- Hint Addons -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/show-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/xml-hint.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/hint/html-hint.min.js"></script>
@@ -268,14 +426,32 @@
       }
     }
     
+    // ===== Modal Control =====
+    function openUploadModal() {
+      document.getElementById('upload-modal').classList.add('active');
+    }
+    function closeUploadModal() {
+      document.getElementById('upload-modal').classList.remove('active');
+    }
+    function triggerFileInput() {
+      closeUploadModal(); // Close modal to show loading screen later
+      document.getElementById('file-input').click();
+    }
+
     // ===== Loading Screen Helpers =====
     function showLoading() {
-      const overlay = document.getElementById('loading-overlay');
-      if (overlay) overlay.classList.add('active');
+      document.getElementById('loading-overlay').classList.add('active');
     }
     function hideLoading() {
-      const overlay = document.getElementById('loading-overlay');
-      if (overlay) overlay.classList.remove('active');
+      document.getElementById('loading-overlay').classList.remove('active');
+    }
+    function updateLoadingProgress(loaded, total) {
+      const percent = total > 0 ? Math.round((loaded / total) * 100) : 0;
+      const loadedMB = (loaded / (1024 * 1024)).toFixed(2);
+      const totalMB = (total / (1024 * 1024)).toFixed(2);
+      
+      document.getElementById('progress-bar').style.width = percent + '%';
+      document.getElementById('progress-stats').textContent = `${loadedMB} MB / ${totalMB} MB (${percent}%)`;
     }
 
     // ===== Toast notification helper =====
@@ -428,49 +604,84 @@
       showToast('Downloaded: project.html');
     }
 
-    // ===== Upload: file input handler =====
+    // ===== Upload: file input handler with Progress & Settings =====
     function handleFileUpload(event) {
       if (!editors.html) {
         showToast('Editor not ready yet, please wait…');
         event.target.value = '';
         return;
       }
-      const files = event.target.files;
-      if (!files || files.length === 0) return;
+      const files = Array.from(event.target.files);
+      if (files.length === 0) return;
 
-      showLoading(); // Show loading screen
-      let filesProcessed = 0;
-      const totalFiles = files.length;
+      // Read settings
+      const autoSplit = document.getElementById('setting-autosplit').checked;
+      const beautify = document.getElementById('setting-beautify').checked;
+      const delay = parseInt(document.getElementById('setting-delay').value, 10) || 0;
 
-      Array.from(files).forEach(function(file) {
+      let totalBytes = files.reduce((sum, f) => sum + f.size, 0);
+      let loadedBytes = 0;
+      
+      showLoading();
+      updateLoadingProgress(0, totalBytes);
+
+      let currentIndex = 0;
+
+      function processNextFile() {
+        if (currentIndex >= files.length) {
+          // All files done
+          if (beautify) codeBeautify();
+          saveCodeState();
+          updatePreview();
+          editors.html.refresh(); editors.css.refresh(); editors.js.refresh();
+          hideLoading();
+          event.target.value = '';
+          return;
+        }
+
+        const file = files[currentIndex];
         const reader = new FileReader();
-        reader.onload = function(e) {
-          loadFileContent(file.name, e.target.result);
-          filesProcessed++;
-          if (filesProcessed === totalFiles) {
-            // All files have been read
-            saveCodeState();
-            updatePreview();
-            
-            // Refresh editors to ensure UI updates properly
-            editors.html.refresh();
-            editors.css.refresh();
-            editors.js.refresh();
-            
-            hideLoading(); // Hide loading screen
+
+        reader.onprogress = function(e) {
+          if (e.lengthComputable) {
+            let currentFileLoaded = e.loaded;
+            let overallLoaded = loadedBytes + currentFileLoaded;
+            updateLoadingProgress(overallLoaded, totalBytes);
           }
         };
+
+        reader.onload = function(e) {
+          const content = e.target.result;
+          
+          // Use setTimeout to allow UI to update and prevent "Unresponsive Script"
+          setTimeout(function() {
+            if (autoSplit) {
+              loadFileContent(file.name, content);
+            } else {
+              // Force everything into the HTML editor
+              editors.html.setValue(editors.html.getValue() + '\n' + content);
+              showToast('Loaded to HTML: ' + file.name);
+            }
+            
+            loadedBytes += file.size;
+            updateLoadingProgress(loadedBytes, totalBytes);
+            currentIndex++;
+            processNextFile(); // Process next file
+          }, delay);
+        };
+
         reader.onerror = function() {
           showToast('Failed to read: ' + file.name);
-          filesProcessed++;
-          if (filesProcessed === totalFiles) {
-            hideLoading();
-          }
+          loadedBytes += file.size;
+          updateLoadingProgress(loadedBytes, totalBytes);
+          currentIndex++;
+          processNextFile();
         };
-        reader.readAsText(file);
-      });
 
-      event.target.value = ''; // Reset input
+        reader.readAsText(file);
+      }
+
+      processNextFile();
     }
 
     // ===== Load file content into the appropriate editor(s) =====
@@ -602,26 +813,14 @@
             return;
           }
 
-          showLoading(); // Show loading screen on drop
-          let filesProcessed = 0;
-          const totalFiles = e.dataTransfer.files.length;
-
-          Array.from(e.dataTransfer.files).forEach(function(file) {
-            const reader = new FileReader();
-            reader.onload = function(ev) {
-              loadFileContent(file.name, ev.target.result);
-              filesProcessed++;
-              if (filesProcessed === totalFiles) {
-                saveCodeState();
-                updatePreview();
-                editors.html.refresh();
-                editors.css.refresh();
-                editors.js.refresh();
-                hideLoading(); // Hide loading screen
-              }
-            };
-            reader.readAsText(file);
-          });
+          // Simulate the file input change event for drag and drop
+          const dt = new DataTransfer();
+          Array.from(e.dataTransfer.files).forEach(file => dt.items.add(file));
+          const input = document.getElementById('file-input');
+          input.files = dt.files;
+          
+          // Open modal to ask for settings before processing
+          openUploadModal();
         }
       });
     }
