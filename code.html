@@ -14,7 +14,7 @@
   <style>
     /* Fix CodeMirror layout to scroll within its container */
     html, body { height: 100%; margin: 0; overflow: hidden; }
-    .main { display: flex; flex-direction: column; height: calc(100vh - 100px); /* Adjust based on header/footer */ overflow: hidden; }
+    .main { display: flex; flex-direction: column; height: calc(100vh - 100px); overflow: hidden; }
     .code-container { display: flex; flex-direction: column; flex: 1; min-height: 0; }
     .code-body { display: flex; flex: 1; min-height: 0; overflow: hidden; position: relative; }
     .code-editors { display: flex; flex: 1; min-height: 0; min-width: 0; }
@@ -54,7 +54,7 @@
       color: #fff;
       padding: 10px 24px;
       border-radius: 8px;
-      z-index: 9999;
+      z-index: 10003;
       opacity: 0;
       transition: opacity 0.3s ease;
       pointer-events: none;
@@ -74,7 +74,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 10000;
+      z-index: 10002;
       color: #fff;
       font-family: system-ui, sans-serif;
     }
@@ -95,6 +95,8 @@
       font-weight: 500;
       letter-spacing: 0.5px;
       margin-bottom: 15px;
+      text-align: center;
+      padding: 0 20px;
     }
 
     .progress-container {
@@ -210,7 +212,7 @@
   <!-- Loading Screen Element -->
   <div id="loading-overlay" class="loading-overlay">
     <div class="spinner"></div>
-    <div class="loading-text" id="loading-text">Uploading & Parsing File...</div>
+    <div class="loading-text" id="loading-text">Initializing...</div>
     <div class="progress-container">
       <div class="progress-bar" id="progress-bar"></div>
     </div>
@@ -377,7 +379,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
 
-  <!-- CodeMirror Addons (Auto-complete, UI, Linting) -->
+  <!-- CodeMirror Addons -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closebrackets.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/closetag.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/edit/matchbrackets.min.js"></script>
@@ -405,15 +407,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.15.1/beautify-html.min.js"></script>
 
   <script>
-    // Initialize base UI immediately so icons load instantly
     initBase('code');
 
     let editors = { html: null, css: null, js: null };
     let editorSizes = [33.33, 33.33, 33.34];
     let mainSizes = [60, 40];
     let codeLayout = "vertical";
+    let droppedFiles = null; // Holds files from drag-and-drop
 
-    // VS Code-like Auto-complete Trigger
     function triggerAutoComplete(cm, change) {
       if (!cm.state.completionActive && change.origin === "+input") {
         const c = change.text[0];
@@ -434,8 +435,15 @@
       document.getElementById('upload-modal').classList.remove('active');
     }
     function triggerFileInput() {
-      closeUploadModal(); // Close modal to show loading screen later
-      document.getElementById('file-input').click();
+      closeUploadModal();
+      if (droppedFiles && droppedFiles.length > 0) {
+        // Process dropped files directly using the synthetic event
+        const event = { target: { files: droppedFiles, value: '' } };
+        handleFileUpload(event);
+        droppedFiles = null; // Clear after sending
+      } else {
+        document.getElementById('file-input').click();
+      }
     }
 
     // ===== Loading Screen Helpers =====
@@ -446,7 +454,8 @@
       document.getElementById('loading-overlay').classList.remove('active');
     }
     function updateLoadingProgress(loaded, total) {
-      const percent = total > 0 ? Math.round((loaded / total) * 100) : 0;
+      let percent = total > 0 ? Math.round((loaded / total) * 100) : 0;
+      if (percent > 100) percent = 100; // Clamp to 100
       const loadedMB = (loaded / (1024 * 1024)).toFixed(2);
       const totalMB = (total / (1024 * 1024)).toFixed(2);
       
@@ -465,7 +474,7 @@
       toast.textContent = message;
       toast.classList.add('show');
       clearTimeout(toast._timer);
-      toast._timer = setTimeout(function() { toast.classList.remove('show'); }, 2500);
+      toast._timer = setTimeout(function() { toast.classList.remove('show'); }, 3000);
     }
 
     window.addEventListener('load', function() {
@@ -566,12 +575,17 @@
     function codeBeautify() {
       if (!editors.html) return;
       if (typeof html_beautify !== 'undefined') {
-        editors.html.setValue(html_beautify(editors.html.getValue(), { indent_size: 2, wrap_line_length: 0 }));
-        editors.css.setValue(css_beautify(editors.css.getValue(), { indent_size: 2 }));
-        editors.js.setValue(js_beautify(editors.js.getValue(), { indent_size: 2 }));
-        saveCodeState(); updatePreview();
+        try {
+          editors.html.setValue(html_beautify(editors.html.getValue(), { indent_size: 2, wrap_line_length: 0 }));
+          editors.css.setValue(css_beautify(editors.css.getValue(), { indent_size: 2 }));
+          editors.js.setValue(js_beautify(editors.js.getValue(), { indent_size: 2 }));
+          saveCodeState(); updatePreview();
+        } catch (e) {
+          console.error("Beautify error:", e);
+          showToast("Failed to beautify code. Check console for errors.");
+        }
       } else {
-        alert("Beautify library failed to load.");
+        showToast("Beautify library failed to load.");
       }
     }
     
@@ -604,15 +618,20 @@
       showToast('Downloaded: project.html');
     }
 
-    // ===== Upload: file input handler with Progress & Settings =====
+    // ===== Robust Upload Handler =====
     function handleFileUpload(event) {
       if (!editors.html) {
         showToast('Editor not ready yet, please wait…');
-        event.target.value = '';
+        if (event.target) event.target.value = '';
         return;
       }
+      
+      if (!event.target || !event.target.files || event.target.files.length === 0) {
+        hideLoading();
+        return;
+      }
+
       const files = Array.from(event.target.files);
-      if (files.length === 0) return;
 
       // Read settings
       const autoSplit = document.getElementById('setting-autosplit').checked;
@@ -629,23 +648,34 @@
 
       function processNextFile() {
         if (currentIndex >= files.length) {
-          // All files done
-          if (beautify) codeBeautify();
-          saveCodeState();
-          updatePreview();
-          editors.html.refresh(); editors.css.refresh(); editors.js.refresh();
-          hideLoading();
-          event.target.value = '';
+          // All files are read and parsed
+          if (beautify) {
+            document.getElementById('loading-text').textContent = "Beautifying Code...";
+            // Delay slightly so the UI can update before the heavy synchronous beautify runs
+            setTimeout(() => {
+              try {
+                codeBeautify();
+              } catch (e) {
+                console.error("Beautify error:", e);
+                showToast("Failed to beautify code.");
+              } finally {
+                finalizeUpload();
+              }
+            }, 50);
+          } else {
+            finalizeUpload();
+          }
           return;
         }
 
         const file = files[currentIndex];
         const reader = new FileReader();
 
+        document.getElementById('loading-text').textContent = `Uploading & Parsing (${currentIndex + 1}/${files.length}): ${file.name}`;
+
         reader.onprogress = function(e) {
           if (e.lengthComputable) {
-            let currentFileLoaded = e.loaded;
-            let overallLoaded = loadedBytes + currentFileLoaded;
+            let overallLoaded = loadedBytes + e.loaded;
             updateLoadingProgress(overallLoaded, totalBytes);
           }
         };
@@ -655,18 +685,24 @@
           
           // Use setTimeout to allow UI to update and prevent "Unresponsive Script"
           setTimeout(function() {
-            if (autoSplit) {
-              loadFileContent(file.name, content);
-            } else {
-              // Force everything into the HTML editor
-              editors.html.setValue(editors.html.getValue() + '\n' + content);
-              showToast('Loaded to HTML: ' + file.name);
+            try {
+              if (autoSplit) {
+                loadFileContent(file.name, content);
+              } else {
+                // Force everything into the HTML editor
+                let currentHtml = editors.html.getValue();
+                editors.html.setValue(currentHtml + (currentHtml ? '\n' : '') + content);
+                showToast('Loaded to HTML: ' + file.name);
+              }
+            } catch (err) {
+              console.error("Error processing file:", file.name, err);
+              showToast("Error processing: " + file.name);
+            } finally {
+              loadedBytes += file.size;
+              updateLoadingProgress(loadedBytes, totalBytes);
+              currentIndex++;
+              processNextFile(); // Process next file
             }
-            
-            loadedBytes += file.size;
-            updateLoadingProgress(loadedBytes, totalBytes);
-            currentIndex++;
-            processNextFile(); // Process next file
           }, delay);
         };
 
@@ -678,7 +714,34 @@
           processNextFile();
         };
 
-        reader.readAsText(file);
+        try {
+          reader.readAsText(file);
+        } catch (err) {
+          console.error("Error reading file:", file.name, err);
+          showToast('Failed to read: ' + file.name);
+          loadedBytes += file.size;
+          updateLoadingProgress(loadedBytes, totalBytes);
+          currentIndex++;
+          processNextFile();
+        }
+      }
+
+      function finalizeUpload() {
+        try {
+          document.getElementById('loading-text').textContent = "Finalizing Upload...";
+          saveCodeState();
+          updatePreview();
+          editors.html.refresh(); editors.css.refresh(); editors.js.refresh();
+          showToast('Upload complete!');
+        } catch (err) {
+          console.error("Error finalizing upload:", err);
+          showToast("Error finalizing upload.");
+        } finally {
+          hideLoading(); // ALWAYS hide the loading screen
+          if (event.target && event.target.value !== undefined) {
+            event.target.value = ''; // Reset input
+          }
+        }
       }
 
       processNextFile();
@@ -689,35 +752,42 @@
       const name = fileName.toLowerCase();
       const ext = name.split('.').pop();
 
-      if (ext === 'css') {
-        editors.css.setValue(content);
-        showToast('CSS loaded: ' + fileName);
-      } else if (ext === 'js') {
-        editors.js.setValue(content);
-        showToast('JS loaded: ' + fileName);
-      } else if (ext === 'html' || ext === 'htm') {
-        parseCombinedHTML(content);
-        showToast('HTML loaded: ' + fileName);
-      } else if (ext === 'txt') {
-        if (content.trim().startsWith('<') || content.includes('<!DOCTYPE') || content.includes('<html')) {
+      try {
+        if (ext === 'css') {
+          editors.css.setValue(content);
+          showToast('CSS loaded: ' + fileName);
+        } else if (ext === 'js') {
+          editors.js.setValue(content);
+          showToast('JS loaded: ' + fileName);
+        } else if (ext === 'html' || ext === 'htm') {
           parseCombinedHTML(content);
           showToast('HTML loaded: ' + fileName);
+        } else if (ext === 'txt') {
+          if (content.trim().startsWith('<') || content.includes('<!DOCTYPE') || content.includes('<html')) {
+            parseCombinedHTML(content);
+            showToast('HTML loaded: ' + fileName);
+          } else {
+            editors.html.setValue(content);
+            showToast('Text loaded: ' + fileName);
+          }
         } else {
-          editors.html.setValue(content);
-          showToast('Text loaded: ' + fileName);
+          // Unknown extension — try to detect content type
+          if (content.includes('<html') || content.includes('<!DOCTYPE') || content.includes('<body')) {
+            parseCombinedHTML(content);
+          } else if (content.includes('{') && content.includes('}') && !content.includes('<')) {
+            editors.css.setValue(content);
+          } else if (content.includes('function') || content.includes('var ') || content.includes('const ') || content.includes('let ')) {
+            editors.js.setValue(content);
+          } else {
+            editors.html.setValue(content);
+          }
+          showToast('File loaded: ' + fileName);
         }
-      } else {
-        // Unknown extension — try to detect content type
-        if (content.includes('<html') || content.includes('<!DOCTYPE') || content.includes('<body')) {
-          parseCombinedHTML(content);
-        } else if (content.includes('{') && content.includes('}') && !content.includes('<')) {
-          editors.css.setValue(content);
-        } else if (content.includes('function') || content.includes('var ') || content.includes('const ') || content.includes('let ')) {
-          editors.js.setValue(content);
-        } else {
-          editors.html.setValue(content);
-        }
-        showToast('File loaded: ' + fileName);
+      } catch (err) {
+        console.error("Error loading file content:", fileName, err);
+        showToast("Error parsing: " + fileName);
+        // Fallback: just dump it into the HTML editor to prevent total failure
+        editors.html.setValue(content);
       }
     }
 
@@ -730,35 +800,30 @@
         let cssContent = '';
         let jsContent = '';
 
-        // Extract external stylesheet references (as comments)
         const linkTags = doc.querySelectorAll('link[rel="stylesheet"]');
         linkTags.forEach(function(link) {
           cssContent += '/* External stylesheet: ' + link.getAttribute('href') + ' */\n';
           link.remove();
         });
 
-        // Extract inline CSS from <style> tags
         const styleTags = doc.querySelectorAll('style');
         styleTags.forEach(function(style) {
           cssContent += style.textContent + '\n';
           style.remove();
         });
 
-        // Extract external script references (as comments)
         const externalScripts = doc.querySelectorAll('script[src]');
         externalScripts.forEach(function(script) {
           jsContent += '// External script: ' + script.getAttribute('src') + '\n';
           script.remove();
         });
 
-        // Extract inline JS from remaining <script> tags
         const inlineScripts = doc.querySelectorAll('script');
         inlineScripts.forEach(function(script) {
           jsContent += script.textContent + '\n';
           script.remove();
         });
 
-        // Get remaining body content as the HTML
         const bodyContent = doc.body ? doc.body.innerHTML : '';
 
         editors.html.setValue(bodyContent.trim());
@@ -767,6 +832,7 @@
       } catch(e) {
         console.error('Failed to parse HTML:', e);
         editors.html.setValue(htmlContent);
+        throw e; // Re-throw so loadFileContent knows it failed partially
       }
     }
 
@@ -813,13 +879,8 @@
             return;
           }
 
-          // Simulate the file input change event for drag and drop
-          const dt = new DataTransfer();
-          Array.from(e.dataTransfer.files).forEach(file => dt.items.add(file));
-          const input = document.getElementById('file-input');
-          input.files = dt.files;
-          
-          // Open modal to ask for settings before processing
+          // Store dropped files temporarily and open the settings modal
+          droppedFiles = e.dataTransfer.files;
           openUploadModal();
         }
       });
