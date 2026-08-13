@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minecraft 1.21.11 Download</title>
     <style>
-        /* Reset and Base Styles */
         html, body {
             margin: 0;
             padding: 0;
@@ -23,7 +22,6 @@
             align-items: center;
         }
 
-        /* Dark overlay to make text readable over the background */
         .overlay {
             position: absolute;
             top: 0;
@@ -34,11 +32,10 @@
             z-index: 1;
         }
 
-        /* Main Card Container */
         .card {
             position: relative;
             z-index: 2;
-            background-color: #1e1e1e; /* Dark stone/coal color - NO NEON */
+            background-color: #1e1e1e;
             border: 1px solid #3a3a3a;
             border-radius: 12px;
             padding: 40px;
@@ -46,7 +43,7 @@
             width: 90%;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             text-align: center;
-            color: #d4d4d4; /* Off-white text */
+            color: #d4d4d4;
         }
 
         .card h2 {
@@ -64,7 +61,6 @@
             line-height: 1.5;
         }
 
-        /* Download Button - Muted Grass Green */
         .download-btn {
             display: block;
             width: 100%;
@@ -81,7 +77,7 @@
         }
 
         .download-btn:hover {
-            background-color: #5a8f5a; /* Slightly lighter on hover */
+            background-color: #5a8f5a;
         }
 
         .download-btn:active {
@@ -95,7 +91,6 @@
             transform: none;
         }
 
-        /* Divider */
         .divider {
             height: 1px;
             background-color: #3a3a3a;
@@ -103,7 +98,6 @@
             border: none;
         }
 
-        /* Instructions Section */
         .instructions h3 {
             margin: 0 0 10px 0;
             color: #c8c8c8;
@@ -116,11 +110,10 @@
             margin-bottom: 15px;
         }
 
-        /* URL Display Box */
         .url-box {
             display: inline-block;
             background-color: #2b2b2b;
-            color: #8fb88f; /* Muted green for the URL */
+            color: #8fb88f;
             padding: 10px 20px;
             border-radius: 6px;
             font-family: 'Courier New', Courier, monospace;
@@ -154,46 +147,5 @@
             <p style="font-size: 12px; color: #777; margin-top: 10px;">Opens in a new tab for your convenience.</p>
         </div>
     </div>
-
-    <script>
-        const GAME_URL = "https://github.com/FunkyTimmy/GrouapChat-Biology/releases/download/v1.1/Eaglercraft_1.21.11_WASM_Offline_Download.7.1.html";
-        const FILE_NAME = "Eaglercraft_1.21.11.html";
-
-        async function downloadGame() {
-            const btn = document.getElementById('downloadBtn');
-            btn.innerText = 'Preparing Download...';
-            btn.disabled = true;
-
-            try {
-                const response = await fetch(GAME_URL);
-                if (!response.ok) throw new Error('File not found or network error');
-                
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = FILE_NAME; 
-                document.body.appendChild(a);
-                a.click();
-                
-                window.URL.revokeObjectURL(url);
-                a.remove();
-                
-                btn.innerText = 'Download Started!';
-
-            } catch (error) {
-                console.error('Download Error:', error);
-                window.open(GAME_URL, '_blank');
-                btn.innerText = 'Opened in New Tab (Save Manually)';
-            }
-
-            setTimeout(() => {
-                btn.innerText = 'Download Game';
-                btn.disabled = false;
-            }, 4000);
-        }
-    </script>
 </body>
 </html>
