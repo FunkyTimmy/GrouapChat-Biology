@@ -6,7 +6,7 @@ const SITE = {
   titleSuffix: " - GC Biology"
 };
 
-const GENRES = ["Arcade", "Puzzle", "Strategy", "Action", "Adventure", "Racing", "Sandbox"];
+const GENRES = ["Arcade", "Puzzle", "Strategy", "Action", "Adventure", "Racing", "Sandbox", "Unavailable"];
 
 const GAMES = [
   {
@@ -30,8 +30,8 @@ const GAMES = [
   {
     id: "minecraft2111",
     name: "Minecraft 1.21.11",
-    description: "VERY BUGGY! THIS GAME IS STILL IN DEVELOPMENT, EXPECT ERRORS CONSTANTLY. Eaglercraft 1.21.11. As similar to Minecraft 1.21.11 as possible.",
-    genre: "Sandbox",
+    description: "REQUEST GAME FILE FROM A DEVELOPER IN REAL LIFE! THEN FOLLOW INSTRUCTIONS ON GAME PAGE!",
+    genre: "Unavailable",
     thumbnail: "images/wp8691241-minecraft-thumbnail-wallpapers.jpg",
     fileUrl: "games/minecraft1-21-11.html",
     popular: false,
@@ -53,7 +53,16 @@ const GAMES = [
     thumbnail: "images/gdlite.jpg",
     fileUrl: "games/gdlite.html",
     popular: false,
-  }
+  },
+  {
+    id: "drifthunters",
+    name: "Drift Hunters",
+    description: "Racing game where the entire point of the game is drifting on tracks and upgrading your car.",
+    genre: "Racing",
+    thumbnail: "images/drifthunters.jpg",
+    fileUrl: "games/drifthunters.html",
+    popular: false,
+  },
 ];
 
 const APPS = [
