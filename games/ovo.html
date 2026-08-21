@@ -1,0 +1,190 @@
+<html>
+
+<head>
+  <base href="https://cdn.jsdelivr.net/gh/bubbls/UGS-Assets@main/ovomod/">
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-06HTML1QC5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-06HTML1QC5');
+  </script>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <title>OvO</title>
+  <link rel="manifest" href="appmanifest.json" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <link rel="apple-touch-icon" sizes="256x256" href="icon-256.png" />
+  <meta name="HandheldFriendly" content="true" />
+
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="shortcut icon" sizes="256x256" href="icon-256.png" />
+
+  <style type="text/css">
+    * {
+      padding: 0;
+      margin: 0;
+    }
+
+    html,
+    body {
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+      touch-action: none;
+      -ms-touch-action: none;
+    }
+
+    canvas {
+      touch-action-delay: none;
+      touch-action: none;
+      -ms-touch-action: none;
+    }
+  </style>
+
+  <link href="animate.css" rel="stylesheet" type="text/css" />
+  <link href="hmmg_layoutTransition.css" rel="stylesheet" type="text/css" />
+  <link href="jquery.gritter.css" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+  <div id="fb-root"></div>
+
+  <script>
+    (function() {
+      if (window.location.protocol.substr(0, 4) === "file") {
+        alert("Exported games won't work until you upload them. (When running on the file:/// protocol, browsers block many features from working for security reasons.)");
+      }
+    })();
+  </script>
+
+  <div id="c2canvasdiv">
+
+    <canvas id="c2canvas" width="640" height="640">
+      <h1>Your browser does not appear to support HTML5. Try upgrading your browser to the latest version. <a href="http://www.whatbrowser.org">What is a browser?</a>
+        <br /><br /><a href="http://www.microsoft.com/windows/internet-explorer/default.aspx">Microsoft Internet Explorer</a><br />
+        <a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a><br />
+        <a href="http://www.google.com/chrome/">Google Chrome</a><br />
+        <a href="http://www.apple.com/safari/download/">Apple Safari</a>
+      </h1>
+    </canvas>
+
+  </div>
+  <img id="thumbnail" src="data:image/png;base64,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" style="
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      z-index:9999;
+    ">
+  <script>
+    setTimeout(function() {
+      document.getElementById("thumbnail").remove();
+    }, 2000)
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    }
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "f" || e.key === "F") {
+        toggleFullscreen();
+      } else if (e.ctrlKey) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
+  </script>
+  <script src="jquery-3.4.1.min.js"></script>
+  <script>
+    (function() {
+      var OriginalImage = window.Image;
+      window.Image = function() {
+        var img = new OriginalImage();
+        img.crossOrigin = "anonymous";
+        return img;
+      };
+      var originalCreateElement = document.createElement.bind(document);
+      document.createElement = function(tagName) {
+        var element = originalCreateElement(tagName);
+        if (tagName.toLowerCase() === 'img') {
+          element.crossOrigin = "anonymous";
+        }
+        return element;
+      };
+    })();
+  </script>
+  <script src="GameAnalytics.js"></script>
+  <script src="Tween.js"></script>
+  <script src="html2canvas.min.js"></script>
+  <script src="jquery.gritter.js"></script>
+  <script src="howler.js"></script>
+
+  <script src="c7runtime.js"></script>
+
+  <script>
+    jQuery(document).ready(function() {
+      cr_createRuntime("c2canvas");
+    });
+
+    function onVisibilityChanged() {
+      if (document.hidden || document.mozHidden || document.webkitHidden || document.msHidden)
+        cr_setSuspended(true);
+      else
+        cr_setSuspended(false);
+    };
+    document.addEventListener("visibilitychange", onVisibilityChanged, false);
+    document.addEventListener("mozvisibilitychange", onVisibilityChanged, false);
+    document.addEventListener("webkitvisibilitychange", onVisibilityChanged, false);
+    document.addEventListener("msvisibilitychange", onVisibilityChanged, false);
+
+    function OnRegisterSWError(e) {
+      console.warn("Failed to register service worker: ", e);
+    };
+    window.C2_RegisterSW = function C2_RegisterSW() {
+      if (!navigator.serviceWorker)
+        return;
+      try {
+        navigator.serviceWorker.register("sw.js", {
+            scope: "./"
+          })
+          .then(function(reg) {
+            console.log("Registered service worker on " + reg.scope);
+          })
+          .catch(OnRegisterSWError);
+      } catch (e) {
+        OnRegisterSWError(e);
+      }
+    };
+  </script>
+  <script type="text/javascript">
+    var VERSION = VERSION || (function() {
+      return {
+        version: function() {
+          return "CTLE"
+        },
+        skinVersion: function() {
+          return "1.4.5"
+        },
+        replayVersion: function() {
+          return "1.4.4"
+        },
+      };
+    }());
+  </script>
+  <script src="https://cdn.jsdelivr.net/gh/Arjun99ab/ovo@main/src/modloaders/modloader.js" id="modloader" type="module" defer></script>
+</body>
+
+</html>
