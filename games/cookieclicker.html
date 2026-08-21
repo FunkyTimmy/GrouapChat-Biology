@@ -141,24 +141,6 @@
       </div>
     </div>
   </div>
-  <script>
-    setTimeout(function() {
-      document.getElementById("thumbnail").remove();
-    }, 2000)
-
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    }
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "f" || e.key === "F") {
-        toggleFullscreen();
-      }
-    });
-  </script>
   <script src=""></script>
   <script>
     function toggleFullscreen() {
